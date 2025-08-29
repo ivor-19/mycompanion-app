@@ -1,6 +1,7 @@
 import Button from "@/components/custom/Button";
 import GBackground from "@/components/custom/GBackground";
 import PageLayout from "@/components/custom/layout/PageLayout";
+import { FONT } from "@/lib/scale";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -13,15 +14,15 @@ export default function Home() {
       <GBackground>
         <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
           <View className="min-h-screen items-center w-full gap-4">
-            <View className="bg-white min-h-48 rounded-b-[30px] pt-4 px-6 pb-6 flex-col gap-4 w-full" style={{elevation: 4, shadowColor: 'gray'}}>
+            <View className="bg-white rounded-b-[30px] pt-4 px-6 pb-6 flex-col gap-4 w-full" style={{elevation: 4, shadowColor: 'gray'}}>
               <View className="flex-row justify-between">
                 <View className="justify-center">
-                  <Text className="font-funnel_bold text-2xl">My Companion</Text>
-                  <Text className="font-funnel_regular text-xs">A Mobile-Based Psychological Support Sytem</Text>
+                  <Text className="font-funnel_bold" style={{fontSize: FONT.lg}}>My Companion</Text>
+                  <Text className="font-funnel_regular" style={{fontSize: FONT.xxs}}>A Mobile-Based Psychological Support Sytem</Text>
                 </View>
                 <View className="flex-row gap-2 items-center">
                   <RemixIcon name="shield-check-fill" size={16} color="#6ed0d0"/>
-                  <Text className="font-funnel_regular text-xs">Secure & Private</Text>
+                  <Text className="font-funnel_regular" style={{fontSize: FONT.xxs}}>Secure & Private</Text>
                 </View>
               </View>
               <View className="flex-row items-center gap-4">
@@ -40,7 +41,7 @@ export default function Home() {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{ borderRadius: 30 }}
-              className="h-80 p-6 w-[95%] flex-row items-center"
+              className="h-72 p-6 w-[95%] flex-row items-center"
             >
               {/* Left side: Avatar */}
               <View className="w-[40%] h-full flex items-center justify-end ">
@@ -54,8 +55,8 @@ export default function Home() {
               {/* Right side: Text + Button */}
               <View className="w-[60%] flex-col justify-center items-end gap-4 ">
                 <View className="flex-col gap-2"> 
-                  <Text className="font-cb text-white text-[26px] leading-7 text-right">A SAFE SPACE FOR YOUR THOUGHTS</Text>
-                  <Text className="font-funnel_regular text-right text-white text-[14px] leading-5 opacity-90">
+                  <Text className="font-cb text-white leading-7 text-right" style={{fontSize: FONT.xl}}>A SAFE SPACE FOR YOUR THOUGHTS</Text>
+                  <Text className="font-funnel_regular text-right text-white  leading-5 opacity-90" style={{fontSize: FONT.xs}}>
                     Begin your journey to better mental wellness today
                   </Text>
                 </View>
@@ -63,6 +64,7 @@ export default function Home() {
               </View>
             </LinearGradient>
           </View>
+         
         </ScrollView>
       </GBackground>
     </PageLayout>

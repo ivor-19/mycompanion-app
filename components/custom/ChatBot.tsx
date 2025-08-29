@@ -100,7 +100,7 @@ export default function ChatBot() {
           >
             <TouchableOpacity 
               onPress={handlePress}
-              className="items-center justify-center p-4 bg-[#f5576c] border-2 border-gray-100" 
+              className="items-center justify-center p-4 bg-[#f5576c] border-[1px] border-red-300" 
               style={{elevation: 4, shadowColor: 'gray', borderRadius: 50}} 
               activeOpacity={0.6}
             >

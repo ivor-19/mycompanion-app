@@ -1,4 +1,5 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -46,7 +47,7 @@ export default function RootLayout() {
         </Stack>
        </GestureHandlerRootView>
       <StatusBar style="auto" />
-      {/* <PortalHost /> */}
+      <PortalHost />
     </ThemeProvider>
   );
 }

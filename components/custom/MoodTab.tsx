@@ -1,3 +1,4 @@
+import { FONT } from "@/lib/scale";
 import { router, usePathname } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -15,10 +16,10 @@ export default function MoodTab() {
   }
 
   return(
-    <View className="flex-row gap-4 fixed items-center w-full justify-center bg-white p-4 border-b-[1px] border-gray-200">
+    <View className="flex-row fixed items-center w-full justify-evenly bg-white p-2 border-b-[1px] border-gray-200">
       {tabs.map((tab, index) => (
-        <TouchableOpacity key={index} className={`p-4 flex-1 items-center rounded-full border-2 border-gray-100 ${pathName === tab.route ? 'bg-[#f5576c]' : 'bg-white'}`} onPress={() => handleTabPress(tab.route)} activeOpacity={0.7} style={{elevation: 4, shadowColor: 'gray'}}>
-          <Text className={`font-nt_semi ${pathName === tab.route ? 'text-white' : 'text-black'}`}>{tab.label}</Text>
+        <TouchableOpacity key={index} className={`p-3 flex-1 items-center border-2 border-gray-100 ${tab.label === 'Daily' ? 'rounded-l-full' : tab.label === 'Weekly' ? '' : 'rounded-r-full'} ${pathName === tab.route ? 'bg-[#f5576c]' : 'bg-white'}`} onPress={() => handleTabPress(tab.route)} activeOpacity={0.7} style={{elevation: 4, shadowColor: 'gray'}}>
+          <Text className={`font-nt_semi ${pathName === tab.route ? 'text-white' : 'text-black'}`} style={{fontSize: FONT.xs}}>{tab.label}</Text>
         </TouchableOpacity>
       ))}
 

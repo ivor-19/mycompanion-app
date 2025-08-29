@@ -1,5 +1,7 @@
 import Card from "@/components/custom/Card";
+import CustomModal from "@/components/custom/CustomModal";
 import GBackground from "@/components/custom/GBackground";
+import { FONT } from "@/lib/scale";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -17,11 +19,11 @@ export default function DailyMood() {
   return (
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
-        <View className="flex-1 p-4 ">       
+        <View className="flex-1 p-4 gap-4">       
           <Card className="w-full items-center px-4 py-6 rounded-3xl bg-white shadow-lg">
-            <Text className="font-nt_semi text-xl text-gray-800 mb-4"> How are you feeling today?</Text>
-            <View className="bg-orange-50 rounded-full px-6 py-3 mb-8">
-              <Text className="font-nt_semi text-orange-800"> Thursday, August 28, 2025 </Text>
+            <Text className="font-nt_semi text-gray-800 mb-2" style={{fontSize: FONT.md}}> How are you feeling today?</Text>
+            <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
+              <Text className="font-nt_semi text-orange-800" style={{fontSize: FONT.xs}}> Thursday, August 28, 2025 </Text>
             </View>      
             <View className="flex-row flex-wrap w-full gap-4 justify-center">
               {emotions.map((emotion, index) => (
@@ -35,14 +37,14 @@ export default function DailyMood() {
                 >                                                     
                   <TouchableOpacity className="w-full h-full items-center justify-center gap-3" activeOpacity={0.7} >
                     <Image source={emotion.image} contentFit="contain" style={{width: 40, height: 40}} />
-                    <Text className="font-funnel_bold text-sm text-white" style={{textShadowColor: 'black',   textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 1,}}> {emotion.mood} </Text>
+                    <Text className="font-funnel_bold text-white" style={{fontSize: FONT.xs, textShadowColor: 'black',   textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 1,}}> {emotion.mood} </Text>
                   </TouchableOpacity>                                     
                 </LinearGradient>
               ))}
             </View>
           </Card>   
-          <Card className="w-full px-8 py-6 rounded-3xl bg-white shadow-lg gap-4">
-            <Text className="font-nt_semi text-lg">Recent Entries</Text>
+          <Card className="w-full px-6 py-6 rounded-3xl bg-white shadow-lg gap-4">
+            <Text className="font-nt_semi" style={{fontSize: FONT.md}}>Recent Entries</Text>
             <View className="flex-1 gap-2">
               <TouchableOpacity activeOpacity={0.8} className="bg-white">
                 <Card className="bg-white rounded-2xl py-6 flex-row items-center justify-center gap-4">
@@ -50,15 +52,15 @@ export default function DailyMood() {
                     <Image source={require('@/assets/icons/emojis/happy.png')} contentFit="contain" style={{height: 30, width: 30}}/>
                   </View>
                   <View className="flex-1">
-                    <Text className="font-nt_semi text-lg">2 days ago</Text>
-                    <Text className="font-nt_regular text-sm">Had a great day at work</Text>
+                    <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>2 days ago</Text>
+                    <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>Had a great day at work</Text>
                   </View>  
                   <View className="border-[1px] border-gray-300 rounded-2xl px-4 py-2">
-                    <Text className="font-nt_regular text-sm">Happy</Text>
+                    <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>Happy</Text>
                   </View>  
                 </Card>
               </TouchableOpacity>
-             
+              <CustomModal />
             </View>
           </Card>       
         </View>

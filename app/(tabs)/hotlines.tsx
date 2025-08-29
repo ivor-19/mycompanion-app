@@ -1,10 +1,9 @@
 import Card from "@/components/custom/Card";
 import CustomHeader from "@/components/custom/CustomHeader";
 import EmergencySheet from "@/components/custom/EmergencySheet";
-import { Image } from "expo-image";
-
 import { useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import RemixIcon from "react-native-remix-icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,7 +28,22 @@ export default function Hotlines() {
           />
           <RemixIcon name="search-2-line" size={22} color="gray"/>
         </Card>
-        <Image source={require('../../assets/images/map.png')} contentFit="cover" style={{height: '100%', width: '100%'}}/>
+        <View className="w-full h-full bg-gray-300">
+         <MapView
+            style={{width: '100%', height: "100%"}}
+            provider={PROVIDER_GOOGLE}
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+ 
+          >
+          </MapView>
+          
+        </View>
+        {/* <Image source={require('../../assets/images/map.png')} contentFit="cover" style={{height: '100%', width: '100%'}}/> */}
         <TouchableOpacity onPress={() => setIsOpen(true)} activeOpacity={0.8} className="absolute bottom-6 items-center justify-center p-2 w-[95%] bg-white rounded-2xl border-2 border-gray-100" style={{elevation: 4, shadowColor: 'gray'}}>
           <RemixIcon name="arrow-up-wide-line"/>
         </TouchableOpacity>

@@ -1,6 +1,7 @@
 import AlertBox from "@/components/custom/Alert";
 import GBackground from "@/components/custom/GBackground";
 import TypingIndicator from "@/components/custom/TypingIndicator";
+import { FONT } from "@/lib/scale";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -103,10 +104,10 @@ export default function Support() {
         <View className="flex-1 flex-row gap-4 items-center">
           <Image source={require('../assets/images/bot/head-nobg.png')} style={{height: 45, width: 45}} contentFit="contain"/>
           <View>
-            <Text className="font-funnel_bold text-xl">Eunoia</Text>
+            <Text className="font-funnel_bold" style={{fontSize: FONT.md}}>Eunoia</Text>
             <View className="flex-row gap-2 items-center">
               <View className="bg-green-500 rounded-full h-2 w-2"/>
-              <Text className="font-funnel_regular text-sm">Always here for you</Text>
+              <Text className="font-funnel_regular " style={{fontSize: FONT.xs}}>Always here for you</Text>
             </View>
           </View>
         </View>
@@ -148,7 +149,7 @@ export default function Support() {
                         {message.text}
                       </Text>
                     </View>
-                    <Text className={`font-nt_regular text-gray-600 px-2 text-xs ${message.isUser ? 'text-right' : 'text-left'}`}>{message.timestamp}</Text>
+                    <Text className={`font-nt_regular text-gray-600 px-2  ${message.isUser ? 'text-right' : 'text-left'}`} style={{fontSize: FONT.xxs}}>{message.timestamp}</Text>
                   </View>
                 </View>
               ))}
@@ -156,7 +157,7 @@ export default function Support() {
 
               {messages.length === 1 && 
                 <View className="mt-6 mb-4">
-                  <Text className="font-funnel_medium text-gray-600 text-sm mb-3 text-center">How can I support you today?</Text>
+                  <Text className="font-funnel_medium text-gray-600  mb-3 text-center" style={{fontSize: FONT.xs}}>How can I support you today?</Text>
                   <View className="flex-row flex-wrap gap-2 justify-center">
                     {options.map((option, index) => (
                       <TouchableOpacity 
@@ -166,7 +167,7 @@ export default function Support() {
                         style={{elevation: 4, shadowColor: 'gray'}} 
                         activeOpacity={0.8}
                       >
-                        <Text className="font-funnel_regular text-sm text-gray-700">{option.label}</Text>
+                        <Text className="font-funnel_regular text-gray-700" style={{fontSize: FONT.xs}}>{option.label}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -187,7 +188,7 @@ export default function Support() {
           </ScrollView>
 
           {/* Input bar */}
-          <View className="w-full items-center">
+          <View className="w-full items-center pb-4">
             <View className="py-2 w-[95%] my-4 bg-white flex-row items-center px-6 border-2 border-gray-200" style={{borderRadius: 20, minHeight: 60}}>
               <TextInput
                 className="flex-1 font-funnel_regular"
@@ -206,15 +207,15 @@ export default function Support() {
             <View className="flex-row gap-3">
               <View className="flex-row items-center">
                 <RemixIcon name="phone-line" color="gray" size={16}/>
-                <Text className="ml-1 font-nt_regular text-xs text-gray-600">Crisis Hotline</Text>
+                <Text className="ml-1 font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}>Crisis Hotline</Text>
               </View>
               <View className="flex-row items-center">
                 <RemixIcon name="heart-line" color="gray" size={16}/>
-                <Text className="ml-1 font-nt_regular text-xs text-gray-600">Self-Care Tips</Text>
+                <Text className="ml-1 font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}>Self-Care Tips</Text>
               </View>
               <View className="flex-row items-center">
                 <RemixIcon name="user-heart-line" color="gray" size={16}/>
-                <Text className="ml-1 font-nt_regular text-xs text-gray-600">Find Therapist</Text>
+                <Text className="ml-1 font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}>Find Therapist</Text>
               </View>
             </View>
           </View>
