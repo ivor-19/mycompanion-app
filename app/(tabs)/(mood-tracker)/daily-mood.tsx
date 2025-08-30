@@ -2,29 +2,37 @@ import Card from "@/components/custom/Card";
 import GBackground from "@/components/custom/GBackground";
 import MoodEntryModal from "@/components/custom/modal/MoodEntryModal";
 import { FONT } from "@/lib/scale";
+import { useMoodStore } from "@/stores/moodStore";
 import { useTimeStore } from "@/stores/timeStore";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import RemixIcon from "react-native-remix-icon";
 
 const emotions = [
-  { mood: 'Happy', image: require('@/assets/icons/emojis/happy.png'), colors: ['#FFFDE4', '#FFE259', '#FFA751'] },
-  { mood: 'Sad', image: require('@/assets/icons/emojis/sad.png'), colors: ['#89F7FE', '#66A6FF', '#0052D4'] },
-  { mood: 'Angry', image: require('@/assets/icons/emojis/angry.png'), colors: ['#FF512F', '#F09819', '#DD2476'] }, 
-  { mood: 'Anxious', image: require('@/assets/icons/emojis/anxious.png'), colors: ['#F0E68C', '#DDA0DD', '#9370DB'] },
-  { mood: 'Sleepy', image: require('@/assets/icons/emojis/sleepy.png'), colors: ['#2C3E50', '#4CA1AF', '#BBD2C5'] }, 
-  { mood: 'Excited', image: require('@/assets/icons/emojis/excited.png'), colors: ['#FF61D2', '#FE9090', '#FFD194'] }, 
+  { mood: 'Happy', emoji: require('@/assets/icons/emojis/happy.png'), colors: ['#FFFDE4', '#FFE259', '#FFA751'] },
+  { mood: 'Sad', emoji: require('@/assets/icons/emojis/sad.png'), colors: ['#89F7FE', '#66A6FF', '#0052D4'] },
+  { mood: 'Angry', emoji: require('@/assets/icons/emojis/angry.png'), colors: ['#FF512F', '#F09819', '#DD2476'] }, 
+  { mood: 'Anxious', emoji: require('@/assets/icons/emojis/anxious.png'), colors: ['#F0E68C', '#DDA0DD', '#9370DB'] },
+  { mood: 'Sleepy', emoji: require('@/assets/icons/emojis/sleepy.png'), colors: ['#2C3E50', '#4CA1AF', '#BBD2C5'] }, 
+  { mood: 'Excited', emoji: require('@/assets/icons/emojis/excited.png'), colors: ['#FF61D2', '#FE9090', '#FFD194'] }, 
 ] as const ;
 
 export default function DailyMood() {
   const [open, setOpen] = useState(false)
   const [selectedEmotion, setSelectedEmotion] = useState<any>(null);
+
   const { currentTime, currentDay, currentDate } = useTimeStore();
+  const { moods, deleteMood } = useMoodStore();
 
   const handlePress = async (emotion: any) => {
     setSelectedEmotion(emotion)
     setOpen(true)
+  }
+
+  const handleDeleteMood = async (id: string) => {
+   deleteMood(id)
   }
 
   return (
@@ -47,7 +55,7 @@ export default function DailyMood() {
                   style={{borderRadius: 20, overflow: 'hidden'}}
                 >                                                     
                   <TouchableOpacity className="w-full h-full items-center justify-center gap-3" activeOpacity={0.7} onPress={() => handlePress(emotion)}>
-                    <Image source={emotion.image} contentFit="contain" style={{width: 40, height: 40}} />
+                    <Image source={emotion.emoji} contentFit="contain" style={{width: 40, height: 40}} />
                     <Text className="font-funnel_bold text-white" style={{fontSize: FONT.xs, textShadowColor: 'black',   textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 1,}}> {emotion.mood} </Text>
                   </TouchableOpacity>                                                  
                 </LinearGradient>
@@ -57,22 +65,36 @@ export default function DailyMood() {
           <Card className="w-full px-6 py-4 rounded-3xl bg-white shadow-lg gap-4">
             <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>Recent Entries</Text>
             <View className="flex-1 gap-2">
-              <TouchableOpacity activeOpacity={0.8} className="bg-white">
-                <Card className="bg-white rounded-2xl py-6 flex-row items-center justify-center gap-4">
-                  <View className="items-center justify-center h-8 w-8 rounded-full" style={{elevation: 6, shadowColor: 'gray'}}>
-                    <Image source={require('@/assets/icons/emojis/happy.png')} contentFit="contain" style={{height: 30, width: 30}}/>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-nt_semi" style={{fontSize: FONT.xs}}>2 days ago</Text>
-                    <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>Had a great day at work</Text>
-                    <View className="border-[1px] border-gray-300 rounded-2xl py-1 mt-1 max-w-20 items-center justify-center">
-                      <Text className="font-nt_regular" style={{fontSize: FONT.xxs}}>Happy</Text>
-                    </View> 
-                  </View>  
-                 
-                </Card>
-              </TouchableOpacity>
-              
+              {moods.length === 0 ? (
+                <View className="py-8 items-center justify-center">
+                  <Text className="font-nt_regular text-gray-500" style={{fontSize: FONT.xs}}>
+                    No mood entries yet.
+                  </Text>
+                </View>
+
+              ):(
+                <>
+                  {moods.map((mood, index) => (
+                    <TouchableOpacity activeOpacity={0.8} className="bg-white" key={index}>
+                      <Card className="bg-white rounded-2xl py-6 flex-row items-center justify-center gap-4">                
+                        <View className="items-center justify-center h-8 w-8 rounded-full" style={{elevation: 6, shadowColor: 'gray'}}>
+                          <Image source={mood.emoji} contentFit="contain" style={{height: 30, width: 30}}/>
+                        </View>                                        
+                        <View className="flex-1">
+                          <Text className="font-nt_semi" style={{fontSize: FONT.xs}}>{mood.date}</Text>
+                          <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>{mood.note}</Text>
+                          <View className="border-[1px] border-gray-300 rounded-2xl py-1 mt-1 max-w-20 items-center justify-center">
+                            <Text className="font-nt_regular" style={{fontSize: FONT.xxs}}>{mood.mood}</Text>
+                          </View> 
+                        </View>  
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => handleDeleteMood(mood.id)}>
+                          <RemixIcon name="delete-bin-fill" size={20} color="#BA1849"/>
+                        </TouchableOpacity>
+                      </Card>
+                    </TouchableOpacity>
+                  ))}
+                </>          
+              )}
             </View>
           </Card>       
         </View>

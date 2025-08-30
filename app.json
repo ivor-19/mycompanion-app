@@ -51,7 +51,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "This app uses location to show maps."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
 import { FONT } from '@/lib/scale';
+import { useMoodStore } from '@/stores/moodStore';
 import { useTimeStore } from '@/stores/timeStore';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
@@ -18,7 +19,7 @@ import { scale } from 'react-native-size-matters';
 
 type EmotionsData = {
   mood: string
-  image: string
+  emoji: string
 }
 
 interface Props {
@@ -28,8 +29,10 @@ interface Props {
 }
 
 export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
   const { currentTime, currentDay, currentDate } = useTimeStore()
+  const { addMood } = useMoodStore()
+  const [note, setNote] = useState('')
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -51,6 +54,25 @@ export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
       keyboardDidHideListener?.remove();
     };
   }, []);
+
+  const handleSaveMood = async () => {
+
+    try {
+      addMood(
+        emotions.mood,
+        currentDate,
+        currentDay,
+        currentTime,
+        emotions.emoji,
+        note || 'No note added',
+      )
+
+
+      setNote('')
+    } catch (error) {
+      console.error("Error occured: ", error)
+    }
+  }
   
   return(
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -64,7 +86,7 @@ export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
       >
         <AlertDialogHeader className='w-full'> 
           <View className='items-center gap-2' style={{ width: '100%' }}>
-            <Image source={emotions?.image} style={{height: 50, width: 50}}/>
+            <Image source={emotions?.emoji} style={{height: 50, width: 50}}/>
             <AlertDialogTitle className='font-funnel_semi'>{emotions?.mood}</AlertDialogTitle>
             <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
               <Text className="font-nt_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime}</Text>
@@ -79,14 +101,16 @@ export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
               <TextInput 
                 multiline
                 placeholder="Share your thoughts..."
-                className='font-nt_regular'
+                className='font-nt_regular text-black'
+                placeholderTextColor={'gray'}
                 style={{
                   minHeight: 60,
                   textAlignVertical: 'top',
                   fontSize: FONT.xs,
                 }}
                 maxLength={500}
-                blurOnSubmit={false}
+                value={note}
+                onChangeText={setNote}
                 returnKeyType="done"
               />
             </View>
@@ -112,7 +136,7 @@ export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
           <AlertDialogCancel className='flex-1 flex-row items-center justify-center'>
             <Text className='text-center font-nt_medium'>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction className='flex-1 flex-row items-center justify-center bg-[#f5576c]'>
+          <AlertDialogAction className='flex-1 flex-row items-center justify-center bg-[#f5576c]' onPress={handleSaveMood}>
             <Text className='text-center font-nt_medium text-white'>Save Entry</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
