@@ -1,3 +1,4 @@
+import { FONT } from "@/lib/scale";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
@@ -18,7 +19,7 @@ export default function CustomHeader({title, enableBack}: Props) {
         }
       </View>
       <View className="w-full items-center">
-        <Text className="font-funnel_bold text-xl">{title}</Text>
+        <Text className="font-funnel_bold" style={{fontSize: FONT.md}}>{title}</Text>
       </View>
       <View className="flex-1 items-end">
         <Text></Text>
