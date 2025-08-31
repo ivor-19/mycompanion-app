@@ -1,6 +1,6 @@
 // Option 3: Updated MoodLayout
 import PageLayout from "@/components/custom/layout/PageLayout";
-import MoodTab from "@/components/custom/MoodTab";
+import MoodTab from "@/components/custom/mood/MoodTab";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 

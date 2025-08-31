@@ -8,6 +8,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
+import { getEmojiByMood } from '@/helper/moodEmoji';
 import { FONT } from '@/lib/scale';
 import { useMoodStore } from '@/stores/moodStore';
 import { useTimeStore } from '@/stores/timeStore';
@@ -17,18 +18,13 @@ import { Keyboard, Platform, TextInput, TouchableOpacity, View } from 'react-nat
 import RemixIcon from 'react-native-remix-icon';
 import { scale } from 'react-native-size-matters';
 
-type EmotionsData = {
-  mood: string
-  emoji: string
-}
-
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
-  emotions: EmotionsData
+  moodText: string
 }
 
-export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
+export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   const { currentTime, currentDay, currentDate } = useTimeStore()
   const { addMood } = useMoodStore()
@@ -59,11 +55,10 @@ export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
 
     try {
       addMood(
-        emotions.mood,
+        moodText,
         currentDate,
         currentDay,
         currentTime,
-        emotions.emoji,
         note || 'No note added',
       )
 
@@ -86,8 +81,8 @@ export default function MoodEntryModal({ open, setOpen, emotions }: Props) {
       >
         <AlertDialogHeader className='w-full'> 
           <View className='items-center gap-2' style={{ width: '100%' }}>
-            <Image source={emotions?.emoji} style={{height: 50, width: 50}}/>
-            <AlertDialogTitle className='font-funnel_semi'>{emotions?.mood}</AlertDialogTitle>
+            <Image source={getEmojiByMood(moodText)} style={{height: 50, width: 50}}/>
+            <AlertDialogTitle className='font-funnel_semi'>{moodText}</AlertDialogTitle>
             <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
               <Text className="font-nt_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime}</Text>
             </View> 
