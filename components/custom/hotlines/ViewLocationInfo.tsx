@@ -1,0 +1,82 @@
+import {
+  ActionSheet,
+  ActionSheetClose,
+  ActionSheetContent,
+  ActionSheetExpand,
+  ActionSheetHeader
+} from "@/components/ui/action-sheet";
+import { FONT } from "@/lib/scale";
+import { useIsFocused } from "@react-navigation/native";
+import { Image } from "expo-image";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import RemixIcon from "react-native-remix-icon";
+
+type Details = {
+  title?: string
+  address?: string
+  contact?: string
+  schedule?: string
+}
+
+interface Props {
+  isOpen: boolean
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>; 
+  details?: Details
+}
+
+export default function ViewLocationInfo({isOpen, setIsOpen, details}: Props) {
+  const isFocused = useIsFocused();
+
+  if (!isFocused) {
+    return null; // unmount map completely when not focused
+  }
+
+  return(
+    <ActionSheet open={isOpen} onOpenChange={setIsOpen}>
+      <ActionSheetContent>
+        <ActionSheetHeader>
+          <View className="flex-row gap-2">
+            {/* <RemixIcon name="phone-fill" size={20} color="#f5576c"/> */}
+            <Text className="font-nt_semi text-sm">Location Details</Text>
+          </View>
+          <View className="flex-row gap-2 items-center">
+            <ActionSheetExpand />
+            <ActionSheetClose onClose={() => setIsOpen(false)} />
+          </View>
+          
+        </ActionSheetHeader>
+
+        <ScrollView contentContainerStyle={{flexGrow: 1, gap: 30, padding: 10}}>
+          <View className="flex-row gap-4 items-center">
+            <Image source={require('@/assets/images/hospital.png')} style={{height: 40, width: 40}}/>
+            <View>
+              <Text className="font-nt_semi" style={{fontSize: FONT.md}}>{details?.title}</Text>
+              <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>{details?.address}</Text>
+            </View>
+          </View>
+        
+          <View className='pb-20 gap-2'>
+            <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
+              <RemixIcon name="time-line" size={20}/>
+              <View className="flex-1">
+                <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>Hours</Text>
+                <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>06:00 AM - 11:00 PM</Text>
+              </View>
+            </View>
+            <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
+              <RemixIcon name="phone-line" size={20}/>
+              <View className="flex-1">
+                <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>Contact number</Text>
+                <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>+1231252345</Text>
+              </View>
+            </View>
+            <TouchableOpacity className="flex-row gap-2 items-center justify-center p-4 rounded-xl border border-gray-200 bg-[#f5576c]">
+              <RemixIcon name="phone-fill" size={24} color="white"/>
+              <Text className="font-nt_semi text-white" style={{fontSize: FONT.sm}}>Call</Text>
+            </TouchableOpacity>
+          </View>          
+        </ScrollView>
+      </ActionSheetContent>
+    </ActionSheet>
+  )
+}

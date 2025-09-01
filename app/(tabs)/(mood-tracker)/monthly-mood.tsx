@@ -4,6 +4,7 @@ import MoodCard from "@/components/custom/mood/MoodCard";
 import Calendar from "@/components/ui/calendar";
 import { FONT } from "@/lib/scale";
 import { useMoodStore } from "@/stores/moodStore";
+import { useIsFocused } from "@react-navigation/native";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
@@ -35,6 +36,12 @@ export default function MonthlyMood() {
   const formatSelectedDate = (dateString: string) => {
     return dateString;
   };
+
+    const isFocused = useIsFocused();
+  
+    if (!isFocused) {
+      return null; // unmount map completely when not focused
+    }
 
   return (
     <GBackground>

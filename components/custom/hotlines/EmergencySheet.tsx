@@ -5,16 +5,30 @@ import {
   ActionSheetExpand,
   ActionSheetHeader
 } from "@/components/ui/action-sheet";
+import { markers } from "@/helper/locationMarkers";
+import { useIsFocused } from "@react-navigation/native";
 import { ScrollView, Text, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 import EmergencyContact from "./EmergencyContact";
 
 interface Props {
   isOpen: boolean
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>; 
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  onLocationPress: (latitude: number, longitude: number) => void
 }
 
-export default function EmergencySheet({isOpen, setIsOpen}: Props) {
+export default function EmergencySheet({isOpen, setIsOpen, onLocationPress}: Props) {
+  const isFocused = useIsFocused();
+
+  if (!isFocused) {
+    return null; // unmount map completely when not focused
+  }
+
+  const handleLocationPress = (latitude: number, longitude: number) => {
+    setIsOpen(false); // Close the sheet
+    onLocationPress(latitude, longitude); // Navigate to the location
+  };
+
   return(
     <ActionSheet open={isOpen} onOpenChange={setIsOpen}>
       <ActionSheetContent>
@@ -32,13 +46,15 @@ export default function EmergencySheet({isOpen, setIsOpen}: Props) {
 
         <ScrollView contentContainerStyle={{flexGrow: 1}}>
           <View className='pb-20 gap-4'>
-            <EmergencyContact name="DOH – National Center for Mental Health (NCMH) Crisis Hotline" contact="1553 (toll-free, landline or cellphone, nationwide)" type="hospital"/>
-            <EmergencyContact name="Harborview Police Department" contact="9039-452-2323" type="police-station"/>
-            <EmergencyContact name="Harborview Police Department" contact="9039-452-2323" type="police-station"/>
-            <EmergencyContact name="Harborview Police Department" contact="9039-452-2323" type="police-station"/>
-            <EmergencyContact name="Harborview Police Department" contact="9039-452-2323" type="police-station"/>
-            <EmergencyContact name="Harborview Police Department" contact="9039-452-2323" type="police-station"/>
-            <EmergencyContact name="Harborview Police Department" contact="9039-452-2323" type="police-station"/>
+            {markers.map((marker, index) => (
+              <View key={index}>
+                <EmergencyContact 
+                  details={marker} 
+                  type="hospital"
+                  onLocationPress={handleLocationPress}
+                />
+              </View>
+            ))}
           </View>
         </ScrollView>
       </ActionSheetContent>

@@ -6,9 +6,10 @@ import { getEmojiByMood } from "@/helper/moodEmoji";
 import { FONT } from "@/lib/scale";
 import { useMoodStore } from "@/stores/moodStore";
 import { useTimeStore } from "@/stores/timeStore";
+import { useIsFocused } from "@react-navigation/native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const emotions = [
@@ -25,13 +26,8 @@ export default function DailyMood() {
   const [selectedEmotion, setSelectedEmotion] = useState<string>('');
 
   const { currentTime, currentDay, currentDate } = useTimeStore();
-  const { moods, deleteMood, loadStaticData } = useMoodStore();
+  const { moods, deleteMood } = useMoodStore();
 
-  useEffect(() => {
-     if (moods.length === 0) {
-      loadStaticData();
-    }
-  }, [])
 
   const handlePress = async (emotion: any) => {
     setSelectedEmotion(emotion.moodText) // Extract just the moodText string
@@ -41,6 +37,12 @@ export default function DailyMood() {
   const handleDeleteMood = async (id: string) => {
    deleteMood(id)
   }
+
+    const isFocused = useIsFocused();
+  
+    if (!isFocused) {
+      return null; // unmount map completely when not focused
+    }
 
   return (
     <GBackground>
