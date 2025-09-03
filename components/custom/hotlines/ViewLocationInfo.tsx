@@ -37,7 +37,7 @@ export default function ViewLocationInfo({isOpen, setIsOpen, details}: Props) {
         <ActionSheetHeader>
           <View className="flex-row gap-2">
             {/* <RemixIcon name="phone-fill" size={20} color="#f5576c"/> */}
-            <Text className="font-nt_semi text-sm">Location Details</Text>
+            <Text className="font-nt_semi" style={{fontSize: FONT.md}}>Location Details</Text>
           </View>
           <View className="flex-row gap-2 items-center">
             <ActionSheetExpand />
@@ -49,9 +49,9 @@ export default function ViewLocationInfo({isOpen, setIsOpen, details}: Props) {
         <ScrollView contentContainerStyle={{flexGrow: 1, gap: 30, padding: 10}}>
           <View className="flex-row gap-4 items-center">
             <Image source={require('@/assets/images/hospital.png')} style={{height: 40, width: 40}}/>
-            <View>
-              <Text className="font-nt_semi" style={{fontSize: FONT.md}}>{details?.title}</Text>
-              <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>{details?.address}</Text>
+            <View className="w-[80%]">
+              <Text className="font-funnel_semi" style={{fontSize: FONT.md}}>{details?.title}</Text>
+              <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>{details?.address}</Text>
             </View>
           </View>
         
@@ -59,20 +59,20 @@ export default function ViewLocationInfo({isOpen, setIsOpen, details}: Props) {
             <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
               <RemixIcon name="time-line" size={20}/>
               <View className="flex-1">
-                <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>Hours</Text>
-                <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>06:00 AM - 11:00 PM</Text>
+                <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>Hours</Text>
+                <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>06:00 AM - 11:00 PM</Text>
               </View>
             </View>
             <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
               <RemixIcon name="phone-line" size={20}/>
               <View className="flex-1">
-                <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>Contact number</Text>
-                <Text className="font-nt_regular" style={{fontSize: FONT.xs}}>+1231252345</Text>
+                <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>Contact number</Text>
+                <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>+1231252345</Text>
               </View>
             </View>
-            <TouchableOpacity className="flex-row gap-2 items-center justify-center p-4 rounded-xl border border-gray-200 bg-[#f5576c]">
+            <TouchableOpacity className="flex-row gap-2 items-center justify-center p-4 rounded-xl border border-gray-200 bg-[#FF90BC] mb-10" activeOpacity={0.8}>
               <RemixIcon name="phone-fill" size={24} color="white"/>
-              <Text className="font-nt_semi text-white" style={{fontSize: FONT.sm}}>Call</Text>
+              <Text className="font-funnel_semi text-white" style={{fontSize: FONT.sm}}>Call</Text>
             </TouchableOpacity>
           </View>          
         </ScrollView>

@@ -1,18 +1,18 @@
 import Button from "@/components/custom/Button";
 import GBackground from "@/components/custom/GBackground";
-import PageLayout from "@/components/custom/layout/PageLayout";
 import { FONT } from "@/lib/scale";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
   return (
-    <PageLayout>
-      <GBackground>
-        <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="min-h-screen bg-white"> 
+      <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
+        <GBackground>
           <View className="min-h-screen items-center w-full gap-4">
             <View className="bg-white rounded-b-[30px] pt-4 px-6 pb-6 flex-col gap-4 w-full" style={{elevation: 4, shadowColor: 'gray'}}>
               <View className="flex-row justify-between">
@@ -37,7 +37,7 @@ export default function Home() {
             
             </View>
             <LinearGradient
-              colors={['#f5576c', '#FF9A8B']}
+              colors={['#ffc2d1', '#FF90BC']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{ borderRadius: 30 }}
@@ -60,14 +60,14 @@ export default function Home() {
                     Begin your journey to better mental wellness today
                   </Text>
                 </View>
-                <Button text="Chat Now" style="h-12 w-[8em] bg-[#f5576c]" fontStyle="text-sm text-white" onPress={() => router.push('/home')}/>
+                <Button text="Chat Now" style="h-12 w-[8em] bg-[#fff]" fontStyle="text-sm text-black" onPress={() => router.push('/home')}/>
               </View>
             </LinearGradient>
           </View>
-         
-        </ScrollView>
-      </GBackground>
-    </PageLayout>
+        </GBackground>
+        
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

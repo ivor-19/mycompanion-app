@@ -2,6 +2,7 @@ import Card from "@/components/custom/Card";
 import GBackground from "@/components/custom/GBackground";
 import MoodCard from "@/components/custom/mood/MoodCard";
 import MoodEntryModal from "@/components/custom/mood/MoodEntryModal";
+import Separator from "@/components/custom/Separator";
 import { getEmojiByMood } from "@/helper/moodEmoji";
 import { FONT } from "@/lib/scale";
 import { useMoodStore } from "@/stores/moodStore";
@@ -11,6 +12,7 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { scale } from "react-native-size-matters";
 
 const emotions = [
   { moodText: 'Happy', colors: ['#FFFDE4', '#FFE259', '#FFA751'] },
@@ -47,11 +49,11 @@ export default function DailyMood() {
   return (
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
-        <View className="flex-1 p-4 gap-4">       
-          <Card className="w-full items-center px-4 py-6 rounded-3xl bg-white shadow-lg">
-            <Text className="font-nt_semi text-gray-800 mb-2" style={{fontSize: FONT.sm}}> How are you feeling today?</Text>
+        <View className="flex-1 gap-4">       
+          <View className="items-center px-4 py-6 rounded-3xl bg-white m-4">
+            <Text className="font-funnel_semi text-gray-800 mb-2" style={{fontSize: FONT.sm}}> How are you feeling today?</Text>
             <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
-              <Text className="font-nt_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime} </Text>
+              <Text className="font-funnel_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime} </Text>
             </View>      
             <View className="flex-row flex-wrap w-full gap-2 justify-center">
               {emotions.map((emotion, index) => (
@@ -60,8 +62,8 @@ export default function DailyMood() {
                   colors={emotion.colors}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className="w-24 h-28 border border-gray-200"
-                  style={{borderRadius: 20, overflow: 'hidden'}}
+                  className="border border-gray-200"
+                  style={{borderRadius: 20, overflow: 'hidden', height: scale(100), width: scale(80)}}
                 >                                                     
                   <TouchableOpacity className="w-full h-full items-center justify-center gap-3" activeOpacity={0.7} onPress={() => handlePress(emotion)}>
                     <Image source={getEmojiByMood(emotion.moodText)} contentFit="contain" style={{width: 40, height: 40}} />
@@ -70,10 +72,11 @@ export default function DailyMood() {
                 </LinearGradient>
               ))}
             </View>
-            <Text className="font-nt_regular mt-2 text-gray-600" style={{fontSize: FONT.xxs}}>Choose your current mood</Text>
-          </Card>   
-          <Card className="w-full px-6 py-4 rounded-3xl bg-white shadow-lg gap-4">
-            <Text className="font-nt_semi" style={{fontSize: FONT.sm}}>Recent Entries</Text>
+            <Text className="font-funnel_regular mt-2 text-gray-600" style={{fontSize: FONT.xxs}}>Choose your current mood</Text>
+          </View>   
+          <Card className="w-full px-6 py-6 rounded-t-3xl bg-white shadow-lg gap-4">
+            <Text className="font-funnel_semi" style={{fontSize: FONT.md}}>Recent Entries</Text>
+            <Separator />
             <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled>
               {moods.length === 0 ? (
                 <View className="py-8 items-center justify-center">
@@ -100,5 +103,6 @@ export default function DailyMood() {
         <MoodEntryModal open={open} setOpen={setOpen} moodText={selectedEmotion}/>    
       </ScrollView>  
     </GBackground>
+   
   )
 }

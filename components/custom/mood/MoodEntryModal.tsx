@@ -89,7 +89,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
           </View>
           <View className='gap-2'>
             <View className='flex-row gap-2 items-center'>
-              <RemixIcon name='heart-fill' size={16} color='#f5576c'/>
+              <RemixIcon name='heart-fill' size={16} color='#FF90BC'/>
               <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>What's on your mind?</Text>
             </View>
             <View className='w-full border-[1px] rounded-xl border-gray-300 p-2' style={{minHeight: 80}}>
@@ -131,7 +131,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
           <AlertDialogCancel className='flex-1 flex-row items-center justify-center'>
             <Text className='text-center font-nt_medium'>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction className='flex-1 flex-row items-center justify-center bg-[#f5576c]' onPress={handleSaveMood}>
+          <AlertDialogAction className='flex-1 flex-row items-center justify-center bg-[#FF90BC]' onPress={handleSaveMood}>
             <Text className='text-center font-nt_medium text-white'>Save Entry</Text>
           </AlertDialogAction>
         </AlertDialogFooter>

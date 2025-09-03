@@ -1,7 +1,8 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { MotiView } from "moti";
 import React from 'react';
-import { Dimensions, TouchableOpacity, View } from "react-native";
+import { Dimensions, TouchableOpacity } from "react-native";
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -13,19 +14,22 @@ import RemixIcon from "react-native-remix-icon";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-interface GestureContext extends Record<string, unknown> {
+interface GestureContext extends Record<string, number> {
   startX: number;
   startY: number;
 }
 
 export default function ChatBot() {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
+  // Calculate the bottom limit position
+  const bottomLimit = screenHeight / 2 - 370;
   
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(bottomLimit); // Initialize at bottom limit
+     
   // Track if we're dragging to prevent navigation on drag
   const isDragging = useSharedValue(false);
 
-  const panGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
+    const panGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
     onStart: (_, context) => {
       context.startX = translateX.value;
       context.startY = translateY.value;
@@ -53,7 +57,7 @@ export default function ChatBot() {
       }
       
       // Keep within vertical bounds  
-      const maxY = screenHeight / 2 - 450;
+      const maxY = screenHeight / 2 - 370;
       const minY = -screenHeight / 2 + 100;
       
       if (translateY.value > maxY) {
@@ -81,34 +85,26 @@ export default function ChatBot() {
   };
 
   return(
-    <View className="absolute bottom-48 right-10">
-      <PanGestureHandler onGestureEvent={panGestureHandler}>
-        <Animated.View style={animatedStyle}>
-          <MotiView
-            from={{
-              translateY: 0,
-            }}
-            animate={{
-              translateY: [-8, 8],
-            }}
-            transition={{
-              type: 'timing',
-              duration: 2000,
-              loop: true,
-              repeatReverse: true,
-            }}
-          >
-            <TouchableOpacity 
-              onPress={handlePress}
-              className="items-center justify-center p-4 bg-[#f5576c] border-[1px] border-red-300" 
-              style={{elevation: 4, shadowColor: 'gray', borderRadius: 50}} 
-              activeOpacity={0.6}
+    <PanGestureHandler onGestureEvent={panGestureHandler}>
+      <Animated.View style={[animatedStyle, { position: 'absolute', top: '70%', left: '80%' }]}>
+        <LinearGradient
+          colors={['#ffc2d1', '#FF90BC']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{borderRadius: 50}}
+        >
+          <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
+            <MotiView
+              from={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', damping: 15, stiffness: 200 }}
+              className="p-4 shadow-lg"
             >
-              <RemixIcon name="chat-voice-ai-fill" color="white"/>
-            </TouchableOpacity>
-          </MotiView>
-        </Animated.View>
-      </PanGestureHandler>
-    </View>
+              <RemixIcon name="chat-voice-ai-fill" size={24} color="white" />
+            </MotiView>
+          </TouchableOpacity>
+        </LinearGradient>
+      </Animated.View>
+    </PanGestureHandler>
   )
 }

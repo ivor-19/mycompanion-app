@@ -1,16 +1,13 @@
-import Card from "@/components/custom/Card";
-import CustomHeader from "@/components/custom/CustomHeader";
 import EmergencySheet from "@/components/custom/hotlines/EmergencySheet";
 import ViewLocationInfo from "@/components/custom/hotlines/ViewLocationInfo";
+import PageLayout from "@/components/custom/layout/PageLayout";
 import { markers } from "@/helper/locationMarkers";
-import { FONT } from "@/lib/scale";
 import { useIsFocused } from "@react-navigation/native";
 import { Image } from "expo-image";
 import { useRef, useState } from "react";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import RemixIcon from "react-native-remix-icon";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Hotlines() {
   const [listOpen, setListOpen] = useState(false)
@@ -34,21 +31,11 @@ export default function Hotlines() {
   }
 
   return(
-    <SafeAreaView className="flex-1 bg-white">
-      <CustomHeader title="Emergency Map"/>
+    <PageLayout headerTitle="Clinic Locations">
+   
       {/* Map Screen */}
       <View className="flex-1 w-full relative items-center">
-        <Card className="flex-row items-center justify-between absolute top-2 bg-white w-[90%] rounded-full border-2 border-gray-100 z-10 py-2 px-6">
-          <TextInput
-            className="font-funnel_regular flex-1 text-black"
-            placeholder="Search..."
-            placeholderTextColor={'gray'}
-            autoCapitalize="none"
-            style={{fontSize: FONT.xs}}
-          />
-          <RemixIcon name="search-2-line" size={22} color="gray"/>
-        </Card>
-        <View className="w-full h-full bg-gray-300">
+        <View className="min-h-screen w-full bg-gray-300">
          <MapView
             ref={mapRef}
             style={{width: '100%', height: "100%"}}
@@ -83,7 +70,7 @@ export default function Hotlines() {
 
     
       <EmergencySheet isOpen={listOpen} setIsOpen={setListOpen} onLocationPress={handleLocationPress}/>
-       <ViewLocationInfo isOpen={viewLocationOpen} setIsOpen={setViewLocationOpen} details={locationDetails}/>
-    </SafeAreaView>
+      <ViewLocationInfo isOpen={viewLocationOpen} setIsOpen={setViewLocationOpen} details={locationDetails}/>
+    </PageLayout>
   )
 }

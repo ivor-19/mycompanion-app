@@ -1,4 +1,5 @@
 import { FONT } from "@/lib/scale";
+import { LinearGradient } from "expo-linear-gradient";
 import { router, usePathname } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -16,18 +17,36 @@ export default function MoodTab() {
   }
 
   return(
-    <View className="flex-row fixed items-center w-full justify-evenly bg-white p-2 border-b-[1px] border-gray-200">
+    <View className="flex-row fixed items-center w-full justify-evenly p-2 bg-transparent">
       {tabs.map((tab, index) => (
-        <TouchableOpacity 
-          key={index} 
-          className={`p-2 flex-1 items-center border-2 border-gray-100 ${tab.label === 'Daily' ? 'rounded-l-2xl' : tab.label === 'Weekly' ? '' : 'rounded-r-2xl'} ${pathName === tab.route ? 'bg-[#f5576c]' : 'bg-white'}`} 
-          onPress={() => handleTabPress(tab.route)} 
-          disabled={pathName === tab.route}
-          activeOpacity={0.7} 
-          style={{elevation: 4, shadowColor: 'gray'}}
+        <LinearGradient
+          key={index}
+          colors={
+            
+            pathName === tab.route
+              ? ['#ffc2d1', '#FF90BC'] // gradient when selected
+              : ['#ffffff', '#ffffff'] // plain white when not selected
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className={`p-2 flex-1 items-center border-2 border-gray-100 ${
+            tab.label === 'Daily'
+              ? 'rounded-l-2xl'
+              : tab.label === 'Weekly'
+              ? ''
+              : 'rounded-r-2xl'
+          }`}
         >
-          <Text className={`font-nt_semi ${pathName === tab.route ? 'text-white' : 'text-black'}`} style={{fontSize: FONT.xs}}>{tab.label}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            key={index} 
+          
+            onPress={() => handleTabPress(tab.route)} 
+            disabled={pathName === tab.route}
+            activeOpacity={0.7} 
+          >
+            <Text className={`font-nt_semi ${pathName === tab.route ? 'text-white' : 'text-black'}`} style={{fontSize: FONT.xs}}>{tab.label}</Text>
+          </TouchableOpacity>
+        </LinearGradient>
       ))}
 
     </View>

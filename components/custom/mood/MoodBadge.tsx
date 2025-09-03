@@ -37,7 +37,7 @@ export const MoodBadge: React.FC<MoodBadgeProps> = ({ mood, className = '' }) =>
 
   return (
     <View className={`${baseClasses} ${moodClasses.container} ${className}`}>
-      <Text className={`font-nt_semi text-center ${moodClasses.text}`} style={{fontSize: FONT.xxs}}>
+      <Text className={`font-funnel_semi text-center ${moodClasses.text}`} style={{fontSize: FONT.xxs}}>
         {mood}
       </Text>
     </View>

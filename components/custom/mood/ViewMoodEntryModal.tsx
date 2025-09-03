@@ -60,7 +60,7 @@ export default function ViewMoodEntryModal({ open, setOpen, moodData }: Props) {
           
           <View className='gap-2'>
             <View className='flex-row gap-2 items-center'>
-              <RemixIcon name='booklet-fill' size={16} color='#f5576c'/>
+              <RemixIcon name='booklet-fill' size={16} color='#FF90BC'/>
               <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>Note</Text>
             </View>
             <View className='w-full border-[1px] rounded-xl border-gray-300 p-3' style={{minHeight: 80}}>
@@ -72,7 +72,7 @@ export default function ViewMoodEntryModal({ open, setOpen, moodData }: Props) {
             {/* Only show photos section if you plan to implement photo functionality */}
             <View className='gap-2'>
               <View className='flex-row gap-2 items-center'>
-                <RemixIcon name='image-fill' size={16} color='#FFCF36'/>
+                <RemixIcon name='image-fill' size={16} color='#FF90BC'/>
                 <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>Photos</Text>
               </View>
               <View className='w-full border-[1px] rounded-xl border-gray-300 p-3 items-center justify-center' style={{minHeight: 60}}>
@@ -86,7 +86,7 @@ export default function ViewMoodEntryModal({ open, setOpen, moodData }: Props) {
         
         <AlertDialogFooter className='flex-row w-full'>
           <AlertDialogAction 
-            className='flex-1 flex-row items-center justify-center bg-[#f5576c]' 
+            className='flex-1 flex-row items-center justify-center bg-[#FF90BC]' 
             onPress={handleClose}
           >
             <Text className='text-center font-nt_medium text-white'>Close</Text>

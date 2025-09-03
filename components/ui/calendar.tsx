@@ -176,7 +176,7 @@ const Calendar: React.FC<CalendarProps> = ({
           </TouchableOpacity>
         )}
         
-        <Text className='font-nt_semi' style={{fontSize: FONT.md}}>
+        <Text className='font-funnel_semi' style={{fontSize: FONT.md}}>
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </Text>
         
@@ -191,7 +191,7 @@ const Calendar: React.FC<CalendarProps> = ({
       <View style={styles.dayNamesRow}>
         {dayNames.map((day: string) => (
           <View key={day} style={styles.dayNameCell}>
-            <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>{day}</Text>
+            <Text className='font-funnel_regular' style={{fontSize: FONT.xs}}>{day}</Text>
           </View>
         ))}
       </View>
@@ -200,6 +200,7 @@ const Calendar: React.FC<CalendarProps> = ({
       <View style={styles.calendarGrid}>
         {renderCalendarDays()}
       </View>
+      <Text className='text-center font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Select a date to see mood entries</Text>
     </View>
   );
 };
@@ -217,6 +218,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
+    margin: 10
   },
   header: {
     flexDirection: 'row',

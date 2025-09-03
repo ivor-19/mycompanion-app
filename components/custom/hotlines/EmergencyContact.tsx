@@ -1,3 +1,4 @@
+import { FONT } from "@/lib/scale";
 import { Image } from "expo-image";
 import { Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
@@ -33,19 +34,19 @@ export default function EmergencyContact({ details, type, onLocationPress }: Pro
       
       <View className="flex-1">
         <Text className="font-nt_semi text-sm leading-4">{details?.title}</Text>
-        {details?.contact && <Text className="font-funnel_regular text-xs">{details?.contact}</Text>}
-        {details?.address && <Text className="font-funnel_regular text-xs">{details?.address}</Text>}
+        {details?.contact && <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}>{details?.contact}</Text>}
+        {details?.address && <Text className="font-funnel_regular" style={{fontSize: FONT.xxs}}>{details?.address}</Text>}
       </View>
       
       <View className="flex-row gap-4">
         {details?.contact &&
           <TouchableOpacity activeOpacity={0.6}>
-            <RemixIcon name="phone-fill" size={24} color="#f5576c" />
+            <RemixIcon name="phone-fill" size={24} color="#FF90BC" />
           </TouchableOpacity>
         }
         {details?.address && details?.latitude && details?.longitude &&
           <TouchableOpacity activeOpacity={0.6} onPress={handleLocationPress}>
-            <RemixIcon name="map-pin-2-fill" size={24} color="#f5576c" />
+            <RemixIcon name="map-pin-2-fill" size={24} color="#FF90BC" />
           </TouchableOpacity>
         }
       </View>

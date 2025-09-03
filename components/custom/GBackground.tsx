@@ -32,7 +32,7 @@ export default function GBackground({ children, showBubbles, bubbleCount = 2 }: 
 
   return (
     <LinearGradient
-      colors={["#FCF5FF", "#FAF0FF", "#F8BDE3"]}
+      colors={["#FCF5FF", "#FAF0FF", "#fdd5df"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       className="flex-1 w-full"

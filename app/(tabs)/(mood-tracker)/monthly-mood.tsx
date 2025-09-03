@@ -46,7 +46,7 @@ export default function MonthlyMood() {
   return (
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
-        <View className="gap-2 p-4">
+        <View className="gap-2 flex-col justify-between">
           <Calendar 
             maxMoodsPerDay={3}
             onDatePress={handleDatePress}
@@ -54,50 +54,41 @@ export default function MonthlyMood() {
             onMonthChange={clearFilter}
           />
           
-          <Card className="w-full px-6 py-4 rounded-3xl bg-white shadow-lg gap-4">
-            {/* Header with filter info */}
-            <View className="flex-row items-center justify-between">
-              <Text className="font-nt_semi" style={{fontSize: FONT.xs}}>
-                {selectedDate ? `Moods for ${formatSelectedDate(selectedDate)}` : 'Select a date to see mood entries'}
-              </Text>
-              
-              {selectedDate && (
-                <TouchableOpacity 
-                  activeOpacity={0.7} 
-                  onPress={clearFilter}
-                  className="flex-row items-center gap-1 bg-gray-100 px-3 py-1 rounded-full"
-                >
-                  <Text className="font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}>
-                    Clear filter
-                  </Text>
+          {selectedDate &&   
+            <Card className="w-full px-6 py-4 rounded-3xl bg-white shadow-lg gap-4">
+              {/* Header with filter info */}
+              <View className="flex-row items-center justify-between">
+                <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}> Moods for {formatSelectedDate(selectedDate)} </Text>
+                <TouchableOpacity activeOpacity={0.7} onPress={clearFilter} className="flex-row items-center gap-1 bg-gray-100 px-3 py-1 rounded-full" >
+                  <Text className="font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}> Clear filter </Text>
                   <RemixIcon name="close-line" size={14} color="#666"/>
                 </TouchableOpacity>
-              )}
-            </View>
+              </View>
 
-            <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled showsVerticalScrollIndicator={true}>
-              {!selectedDate ? (
-                <View></View>
-              ) : filteredMoods.length === 0 ? (
-                <View className="py-8 items-center justify-center">
-                  <Text className="font-nt_regular text-gray-500" style={{fontSize: FONT.xs}}>
-                    No mood entries for {formatSelectedDate(selectedDate)}.
-                  </Text>
-                </View>
-              ) : (
-                <>
-                  {filteredMoods.map((mood, index) => (
-                    <View key={index}>
-                      <MoodCard 
-                        moodData={mood}
-                        handleDeleteMood={() => handleDeleteMood(mood.id)}
-                      />
-                    </View>
-                  ))}
-                </>          
-              )}
-            </ScrollView>
-          </Card>    
+              <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled showsVerticalScrollIndicator={true}>
+                {!selectedDate ? (
+                  <View></View>
+                ) : filteredMoods.length === 0 ? (
+                  <View className="py-8 items-center justify-center">
+                    <Text className="font-nt_regular text-gray-500" style={{fontSize: FONT.xs}}>
+                      No mood entries for {formatSelectedDate(selectedDate)}.
+                    </Text>
+                  </View>
+                ) : (
+                  <>
+                    {filteredMoods.map((mood, index) => (
+                      <View key={index}>
+                        <MoodCard 
+                          moodData={mood}
+                          handleDeleteMood={() => handleDeleteMood(mood.id)}
+                        />
+                      </View>
+                    ))}
+                  </>          
+                )}
+              </ScrollView>
+            </Card>    
+          }
         </View>
       </ScrollView>
     </GBackground>

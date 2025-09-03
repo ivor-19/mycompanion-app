@@ -68,7 +68,7 @@ const ActionSheet = ({ open, onOpenChange, children }: ActionSheetProps) => {
     setIsFullHeight(prev => !prev)
   }, [])
 
-  const maxHeight = isFullHeight ? screenHeight * 0.95 : screenHeight * 0.5
+  const maxHeight = isFullHeight ? screenHeight * 0.95 : screenHeight * 0.6
 
   return (
     <Modal 

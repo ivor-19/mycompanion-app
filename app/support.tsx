@@ -93,7 +93,7 @@ export default function Support() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white items-center">
+    <SafeAreaView className="min-h-screen bg-white items-center">
       {/* Header */}
       <View className='pt-4 pb-4 px-4 bg-white border-b-2 border-gray-100 flex-row items-center'>
         <View className="">
@@ -118,9 +118,7 @@ export default function Support() {
         style={{flex: 1, width: '100%'}}
         keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
       >
-        <GBackground
-         
-        >
+        <GBackground>
           <AlertBox
             text="Crisis Support Available 24/7"
             subText="If you're in immediate danger, please contact emergency services"
@@ -130,7 +128,7 @@ export default function Support() {
           />
           
           <ScrollView 
-            style={{width: '100%', flex: 1}} 
+            style={{flexGrow: 1}} 
             contentContainerStyle={{paddingBottom: 20}}
             ref={scrollViewRef}
             showsVerticalScrollIndicator={false}
@@ -144,7 +142,7 @@ export default function Support() {
                     }
                   </View>
                   <View className="max-w-[70%] flex-col">
-                    <View className={`p-4 rounded-3xl border-2 border-gray-100 ${ message.isUser ? 'bg-white text-black' : 'bg-[#FF5786] text-white'}`} >
+                    <View className={`p-4 rounded-3xl  ${ message.isUser ? 'bg-white' : 'bg-[#FF90BC]'}`} >
                       <Text className={`font-nt_regular ${message.isUser ? 'text-black' : 'text-white'}`}>
                         {message.text}
                       </Text>
@@ -200,7 +198,7 @@ export default function Support() {
                 editable={!isLoading}
               />
               <TouchableOpacity onPress={() => sendMessage(inputText)} disabled={isLoading || !inputText.trim()}>
-                <RemixIcon name="send-plane-fill" color="#f5576c" size={26} />
+                <RemixIcon name="send-plane-fill" color="#FF90BC" size={26} />
               </TouchableOpacity>
             </View>
             

@@ -13,7 +13,7 @@ interface Props {
 
 export default function AlertBox({onPress, mainIcon, text, subText, buttonIcon}: Props) {
   return(
-    <View className="w-full items-center justify-center p-4">
+    <View className="w-full items-center justify-center p-4  z-10">
       <View className="bg-amber-50 border border-amber-200 rounded-2xl p-4 w-full">
         <View className="flex-row items-center gap-3">
           <RemixIcon name={mainIcon as any} color="orange" size={24} />

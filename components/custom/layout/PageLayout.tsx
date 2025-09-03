@@ -15,7 +15,7 @@ export default function PageLayout({ headerTitle, children }: Props) {
         {headerTitle &&
           <CustomHeader title={headerTitle}/>
         }
-        <View style={{ flex: 1 }}>
+        <View style={{ minHeight: '100%' }}>
           {children}
         </View>
        
