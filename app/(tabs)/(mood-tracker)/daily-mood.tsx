@@ -50,7 +50,7 @@ export default function DailyMood() {
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
         <View className="flex-1 gap-4">       
-          <View className="items-center px-4 py-6 rounded-3xl bg-white m-4">
+          <View className="items-center px-4 py-6 rounded-3xl bg-[#FFFCFF] m-4">
             <Text className="font-funnel_semi text-gray-800 mb-2" style={{fontSize: FONT.sm}}> How are you feeling today?</Text>
             <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
               <Text className="font-funnel_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime} </Text>
@@ -74,7 +74,7 @@ export default function DailyMood() {
             </View>
             <Text className="font-funnel_regular mt-2 text-gray-600" style={{fontSize: FONT.xxs}}>Choose your current mood</Text>
           </View>   
-          <Card className="w-full px-6 py-6 rounded-t-3xl bg-white shadow-lg gap-4">
+          <Card className="w-full px-6 py-6 rounded-t-3xl bg-[#FFFCFF] shadow-lg gap-4">
             <Text className="font-funnel_semi" style={{fontSize: FONT.md}}>Recent Entries</Text>
             <Separator />
             <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled>

@@ -9,6 +9,7 @@ type MoodsData = {
   day: string;
   time: string;
   note: string;
+  images: string[]
 };
 
 interface WeeklyMoodGraphProps {

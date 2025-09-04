@@ -19,7 +19,7 @@ export default function TabsLayout() {
             height: 120,
           },
           tabBarActiveTintColor: '#FF90BC',
-          tabBarInactiveTintColor: '#E3E3E3',
+          tabBarInactiveTintColor: '#DCD1E3',
           tabBarButton: (props) => {
             const { ref, ...pressableProps } = props as any;
             return <Pressable {...pressableProps} android_ripple={null} />;
@@ -33,7 +33,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
-              <RemixIcon name={focused ? 'home-6-fill' : 'home-6-line'} color={color} size={focused ? scale(28) : scale(22)} />
+              <RemixIcon name={'home-6-fill'} color={color} size={focused ? scale(28) : scale(22)} />
             </View>
           ),
         }}
@@ -46,7 +46,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
-              <RemixIcon name={focused ? 'emoji-sticker-fill' : 'emoji-sticker-line'} color={color} size={focused ? scale(28) : scale(22)} />
+              <RemixIcon name={'emoji-sticker-fill'} color={color} size={focused ? scale(28) : scale(22)} />
             </View>
           ),
         }}
@@ -59,7 +59,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
-              <RemixIcon name={focused ? 'map-pin-fill' : 'map-pin-line'} color={color} size={focused ? scale(28) : scale(22)} />
+              <RemixIcon name={'map-pin-fill'} color={color} size={focused ? scale(28) : scale(22)} />
             </View>
           ),
         }}
@@ -72,7 +72,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
-              <RemixIcon name={focused ? 'settings-3-fill' : 'settings-3-line'} color={color} size={focused ? scale(28) : scale(22)} />
+              <RemixIcon name={'settings-3-fill'} color={color} size={focused ? scale(28) : scale(22)} />
             </View>
           ),
         }}

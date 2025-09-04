@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mycompanion",
+    "name": "My Companion",
     "slug": "mycompanion",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -52,7 +52,14 @@
           "locationAlwaysAndWhenInUsePermission": "This app uses location to show maps."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+        [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you add them to your mood entries.",
+          "cameraPermission": "The app accesses your camera to let you take photos for your mood entries."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

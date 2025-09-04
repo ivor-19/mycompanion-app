@@ -55,7 +55,7 @@ export default function MonthlyMood() {
           />
           
           {selectedDate &&   
-            <Card className="w-full px-6 py-4 rounded-3xl bg-white shadow-lg gap-4">
+            <Card className="w-full px-6 py-4 rounded-3xl bg-[#FFFCFF] shadow-lg gap-4">
               {/* Header with filter info */}
               <View className="flex-row items-center justify-between">
                 <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}> Moods for {formatSelectedDate(selectedDate)} </Text>

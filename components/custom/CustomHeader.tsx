@@ -13,7 +13,7 @@ export default function CustomHeader({title, enableBack}: Props) {
     <View className='pt-4 pb-4 px-4 bg-white border-b-2 border-gray-100 flex-row items-center'>
       <View className="flex-1">
         {enableBack &&     
-          <TouchableOpacity activeOpacity={0.6} onPress={() => router.back()}>
+          <TouchableOpacity activeOpacity={0.6} onPress={() => router.push('/home')}>
             <RemixIcon name="arrow-left-s-line" size={30}/>
           </TouchableOpacity>
         }

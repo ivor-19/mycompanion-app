@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { MotiView } from "moti";
@@ -10,7 +11,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import RemixIcon from "react-native-remix-icon";
+import { scale } from "react-native-size-matters";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -98,9 +99,9 @@ export default function ChatBot() {
               from={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-              className="p-4 shadow-lg"
+              className="p-2 shadow-lg"
             >
-              <RemixIcon name="chat-voice-ai-fill" size={24} color="white" />
+              <Image source={require('@/assets/images/bot/icon.png')} style={{height: scale(36), width: scale(36)}}/>
             </MotiView>
           </TouchableOpacity>
         </LinearGradient>
