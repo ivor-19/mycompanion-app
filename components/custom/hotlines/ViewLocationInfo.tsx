@@ -1,13 +1,8 @@
-import {
-  ActionSheet,
-  ActionSheetClose,
-  ActionSheetContent,
-  ActionSheetExpand,
-  ActionSheetHeader
-} from "@/components/ui/action-sheet";
+import { ActionSheet, ActionSheetClose, ActionSheetContent, ActionSheetExpand, ActionSheetHeader } from "@/components/ui/action-sheet";
 import { FONT } from "@/lib/scale";
 import { useIsFocused } from "@react-navigation/native";
 import { Image } from "expo-image";
+import * as Linking from "expo-linking";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 
@@ -15,7 +10,7 @@ type Details = {
   title?: string
   address?: string
   contact?: string
-  schedule?: string
+  hours?: string
 }
 
 interface Props {
@@ -56,24 +51,30 @@ export default function ViewLocationInfo({isOpen, setIsOpen, details}: Props) {
           </View>
         
           <View className='pb-20 gap-2'>
-            <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
-              <RemixIcon name="time-line" size={20}/>
-              <View className="flex-1">
-                <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>Hours</Text>
-                <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>06:00 AM - 11:00 PM</Text>
+            {details?.hours &&   
+              <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
+                <RemixIcon name="time-line" size={20}/>
+                <View className="flex-1">
+                  <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>Hours</Text>
+                  <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>{details?.hours}</Text>
+                </View>
               </View>
-            </View>
-            <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
-              <RemixIcon name="phone-line" size={20}/>
-              <View className="flex-1">
-                <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>Contact number</Text>
-                <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>+1231252345</Text>
-              </View>
-            </View>
-            <TouchableOpacity className="flex-row gap-2 items-center justify-center p-4 rounded-xl border border-gray-200 bg-[#FF90BC] mb-10" activeOpacity={0.8}>
-              <RemixIcon name="phone-fill" size={24} color="white"/>
-              <Text className="font-funnel_semi text-white" style={{fontSize: FONT.sm}}>Call</Text>
-            </TouchableOpacity>
+            }
+            {details?.contact &&
+              <>
+                <View className="flex-row items-center gap-2 p-6 border border-gray-200 rounded-2xl bg-white">
+                  <RemixIcon name="phone-line" size={20}/>
+                  <View className="flex-1">
+                    <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>Contact number</Text>
+                    <Text className="font-funnel_regular" style={{fontSize: FONT.xs}}>{details?.contact}</Text>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => Linking.openURL(`tel:${details?.contact}`)} className="flex-row gap-2 items-center justify-center p-4 rounded-xl border border-gray-200 bg-[#FF90BC] mb-10" activeOpacity={0.8}>
+                  <RemixIcon name="phone-fill" size={24} color="white"/>
+                  <Text className="font-funnel_semi text-white" style={{fontSize: FONT.sm}}>Call</Text>
+                </TouchableOpacity>
+              </>
+            }
           </View>          
         </ScrollView>
       </ActionSheetContent>

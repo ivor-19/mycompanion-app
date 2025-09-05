@@ -1,5 +1,6 @@
 import { FONT } from "@/lib/scale";
 import { Image } from "expo-image";
+import * as Linking from "expo-linking";
 import { Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 
@@ -40,7 +41,7 @@ export default function EmergencyContact({ details, type, onLocationPress }: Pro
       
       <View className="flex-row gap-4">
         {details?.contact &&
-          <TouchableOpacity activeOpacity={0.6}>
+          <TouchableOpacity activeOpacity={0.6}  onPress={() => Linking.openURL(`tel:${details?.contact}`)}>
             <RemixIcon name="phone-fill" size={24} color="#FF90BC" />
           </TouchableOpacity>
         }
