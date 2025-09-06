@@ -1,7 +1,7 @@
 import { markers } from '@/helper/locationMarkers'
 import { FONT } from '@/lib/scale'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { useMemo, useRef, useState } from 'react'
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
 import RemixIcon from 'react-native-remix-icon'
 import Card from '../Card'
@@ -53,6 +53,16 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
     setFilteredMarkers(markers)
   }
 
+  // 👇 Add custom backdrop
+  const renderBackdrop = useCallback((props: any) => (
+    <BottomSheetBackdrop
+      {...props}
+      disappearsOnIndex={0}
+      appearsOnIndex={1}
+      pressBehavior="close" // tap backdrop to close
+    />
+  ), [])
+
   return (
     <BottomSheet 
       snapPoints={snapPoints} 
@@ -61,6 +71,7 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
       index={0}
       handleIndicatorStyle={{ backgroundColor: '#000' }}
       backgroundStyle={{ backgroundColor: '#fff' }}
+      backdropComponent={renderBackdrop} // ✅ apply backdrop
     >
       <View className='flex-1 p-4'> 
         <View className="flex-row items-center gap-2 mb-4">

@@ -13,7 +13,7 @@ type MoodsData = {
   day: string;
   time: string;
   note: string;
-  images: string[];
+  images?: string[];
 };
 
 interface Props {
@@ -52,12 +52,12 @@ export default function MoodCard({ moodData, handleDeleteMood }: Props) {
               >
                 {moodData.date} 
               </Text>
-              {moodData.images.length > 0 && (
+              {(moodData.images ?? []).length > 0 && (
                 <Text
                   className="font-funnel_regular text-gray-500"
                   style={{ fontSize: FONT.xxs }}
                 >
-                  {moodData.images.length} Photo/s
+                  {(moodData.images ?? []).length} Photo/s
                 </Text>
               )}
             </View>

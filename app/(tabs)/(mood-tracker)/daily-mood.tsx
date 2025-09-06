@@ -1,4 +1,3 @@
-import Card from "@/components/custom/Card";
 import GBackground from "@/components/custom/GBackground";
 import MoodCard from "@/components/custom/mood/MoodCard";
 import MoodEntryModal from "@/components/custom/mood/MoodEntryModal";
@@ -74,7 +73,7 @@ export default function DailyMood() {
             </View>
             <Text className="font-funnel_regular mt-2 text-gray-600" style={{fontSize: FONT.xxs}}>Choose your current mood</Text>
           </View>   
-          <Card className="w-full px-6 py-6 rounded-t-3xl bg-[#FFFCFF] shadow-lg gap-4">
+          <View className="bg-white rounded-3xl p-5 mx-4 mb-4" style={{elevation: 2, shadowColor: 'gray'}}>
             <Text className="font-funnel_semi" style={{fontSize: FONT.md}}>Recent Entries</Text>
             <Separator />
             <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled>
@@ -98,7 +97,7 @@ export default function DailyMood() {
                 </>          
               )}
             </ScrollView>
-          </Card>       
+          </View>       
         </View>
         <MoodEntryModal open={open} setOpen={setOpen} moodText={selectedEmotion}/>    
       </ScrollView>  

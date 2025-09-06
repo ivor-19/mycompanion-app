@@ -2,6 +2,7 @@ import AlertBox from "@/components/custom/Alert";
 import GBackground from "@/components/custom/GBackground";
 import TypingIndicator from "@/components/custom/TypingIndicator";
 import { FONT } from "@/lib/scale";
+import { useChatStore } from "@/stores/chatStore";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -27,19 +28,19 @@ const options = [
 ];
 
 export default function Support() {
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      id: '1', 
-      text: 'Hey! I\'m Eunoia, your friendly psychological chatbot 🤗. This is a safe, judgment-free space where you can share what\'s on your mind anytime. I\'m here to listen, support, and help you feel a little lighter. So, how are you feeling today?', 
-      isUser: false ,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
-    }
-  ]);
+  // Use Zustand store instead of local state
+  const { messages, addMessage, clearMessages, initializeChat } = useChatStore();
+  
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
 
-  const scrollViewRef = useRef<ScrollView>(null)
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  // Initialize chat when component mounts
+  useEffect(() => {
+    initializeChat();
+  }, []);
 
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -55,7 +56,7 @@ export default function Support() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    addMessage(userMessage); // Use Zustand store method
     const currentInput = textMessage;
     setInputText('');
     setIsLoading(true);
@@ -81,8 +82,7 @@ export default function Support() {
           isUser: false,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
         };
-        setMessages(prev => [...prev, aiMessage]);
-        
+        addMessage(aiMessage); // Use Zustand store method
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to get response');
@@ -111,6 +111,11 @@ export default function Support() {
             </View>
           </View>
         </View>
+        {/* Optional: Add clear chat button */}
+        <TouchableOpacity onPress={clearMessages} className="ml-2 flex-row items-center gap-2 rounded-xl border-gray-300 border-[1px] p-2">
+          <RemixIcon name="edit-2-line" size={14} color="gray"/>
+          <Text className="font-funnel_regular text-gray-600" style={{fontSize: FONT.xxs}}>New chat</Text>
+        </TouchableOpacity>
       </View>
       
       <KeyboardAvoidingView
@@ -134,8 +139,8 @@ export default function Support() {
             showsVerticalScrollIndicator={false}
           >
             <View className="w-full p-4 gap-4">
-              {messages.map((message, index) => (
-                <View key={index} className={`w-full flex-row mb-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+              {messages.map((message) => (
+                <View key={message.id} className={`w-full flex-row mb-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                   <View className="w-[10%] justify-end">
                     {!message.isUser &&
                       <Image source={require('../assets/images/bot/head-nobg.png')} style={{width: 40, height: 40, borderRadius: 50}}/>
@@ -151,7 +156,6 @@ export default function Support() {
                   </View>
                 </View>
               ))}
-
 
               {messages.length === 1 && 
                 <View className="mt-6 mb-4">
@@ -202,6 +206,7 @@ export default function Support() {
               </TouchableOpacity>
             </View>
             
+            
             <View className="flex-row gap-3">
               <View className="flex-row items-center">
                 <RemixIcon name="phone-line" color="gray" size={16}/>
@@ -216,6 +221,9 @@ export default function Support() {
                 <Text className="ml-1 font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}>Find Therapist</Text>
               </View>
             </View>
+            <Text className="text-center text-gray-400 font-funnel_regular mt-2 mb-2 px-6" style={{fontSize: FONT.xxs}}>
+              This AI chatbot is intended for psychological first aid only. Please seek professional psychological intervention for mental health conditions.
+            </Text>
           </View>
         </GBackground>
       </KeyboardAvoidingView>

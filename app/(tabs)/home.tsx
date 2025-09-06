@@ -105,7 +105,6 @@ export default function Home() {
     { icon: "emotion-happy-line", title: "Mood Check", color: "#FF6B9D", route: '/daily-mood' },
     { icon: "map-pin-line", title: "Find a Clinic", color: "#4ECDC4", route: '/hotlines' },
     { icon: "line-chart-fill", title: "Mood Insights", color: "#FFB347", route: '/monthly-mood' },
-    { icon: "shield-cross-line", title: "SOS", color: "#FF4757", route: '/home' },
   ];
 
   const resources = [

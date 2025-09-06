@@ -1,4 +1,3 @@
-import Card from "@/components/custom/Card";
 import GBackground from "@/components/custom/GBackground";
 import MoodCard from "@/components/custom/mood/MoodCard";
 import Calendar from "@/components/ui/calendar";
@@ -55,7 +54,7 @@ export default function MonthlyMood() {
           />
           
           {selectedDate &&   
-            <Card className="w-full px-6 py-4 rounded-3xl bg-[#FFFCFF] shadow-lg gap-4">
+            <View className="bg-white rounded-3xl p-5 mx-4 mb-4" style={{elevation: 2, shadowColor: 'gray'}}>
               {/* Header with filter info */}
               <View className="flex-row items-center justify-between">
                 <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}> Moods for {formatSelectedDate(selectedDate)} </Text>
@@ -87,7 +86,7 @@ export default function MonthlyMood() {
                   </>          
                 )}
               </ScrollView>
-            </Card>    
+            </View>    
           }
         </View>
       </ScrollView>

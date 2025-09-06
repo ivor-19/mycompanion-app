@@ -182,10 +182,18 @@ const WeeklyMoodGraph: React.FC<WeeklyMoodGraphProps> = ({ moodsData }) => {
       </View>
       
       {/* Summary Stats */}
-      <View className='bg-[#f8f9fa] p-4 rounded-xl'>
+      <View className='bg-[#f8f9fa] p-4 rounded-xl gap-2'>
         <Text className='font-funnel_semi' style={{fontSize: FONT.xs}}>Week Summary:</Text>
-        <Text className='font-funnel_regular' style={{fontSize: FONT.xs}}>Total entries: {chartData.reduce((sum, day) => sum + day.totalCount, 0)}</Text>
-        <Text className='font-funnel_regular' style={{fontSize: FONT.xs}}>Most active day: {chartData.reduce((max, day) => day.totalCount > max.totalCount ? day : max).label}</Text>
+        <View className='flex-row gap-2'>
+          <View className='flex-1 flex-col gap-2 items-center'>
+            <Text className='font-funnel_semi text-[#FF6B9D]' style={{fontSize: FONT.xl}}>{chartData.reduce((sum, day) => sum + day.totalCount, 0)}</Text>
+            <Text className='font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Total entries</Text>
+          </View>
+          <View className='flex-1 flex-col gap-2 items-center'>
+            <Text className='font-funnel_semi text-[#6ED0D0]' style={{fontSize: FONT.xl}}>{chartData.reduce((max, day) => day.totalCount > max.totalCount ? day : max).label}</Text>
+            <Text className='font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Most active day</Text>
+          </View>
+        </View>
       </View>
       
       {/* Detailed breakdown */}

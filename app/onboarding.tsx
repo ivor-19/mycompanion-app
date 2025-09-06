@@ -30,7 +30,7 @@ const onboardingData: OnboardingItem[] = [
     id: 1,
     title: 'My Companion',
     subtitle: 'AI as a First Responder: A Mobile-Based Psychological Support System designed to guide and support you anytime, anywhere.',
-    image: require('@/assets/images/illustrations/chatbot.png'),
+    image: require('@/assets/images/illustrations/welcome.png'),
   },
   {
     id: 2,

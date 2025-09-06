@@ -21,7 +21,7 @@ type MoodsData = {
   day: string,
   time: string,
   note: string,
-  images: string[],
+  images?: string[],
 }
 
 interface Props {
@@ -104,14 +104,14 @@ export default function ViewMoodEntryModal({ open, setOpen, moodData }: Props) {
                     <RemixIcon name='image-fill' size={16} color='#FF90BC'/>
                     <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>Captured Photo/s</Text>
                   </View>
-                  {moodData.images?.length > 0 && 
-                    <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>{moodData.images?.length} Photo{moodData.images.length > 1 ? 's' : ''}</Text>
+                  {(moodData.images ?? []).length > 0 && 
+                    <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>{moodData.images?.length} Photo{(moodData.images ?? []).length > 1 ? 's' : ''}</Text>
                   }
                 </View>
                 <View className='w-full border-2 border-dashed rounded-xl border-gray-300 p-3 items-center' style={{minHeight: 60}}>
-                  {moodData.images.length > 0 ? (
+                  {(moodData.images ?? []).length > 0 ? (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingRight: 8, paddingVertical: 10 }} >    
-                      {moodData.images.map((imageUri, index) => (
+                      {moodData?.images?.map((imageUri, index) => (
                         <Pressable key={index} className='relative' onPress={() => openFullScreenImage(imageUri, index)} >
                           <Image 
                             source={{ uri: imageUri }} 
