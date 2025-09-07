@@ -221,7 +221,7 @@ export default function Support() {
                 <Text className="ml-1 font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}>Find Therapist</Text>
               </View>
             </View>
-            <Text className="text-center text-gray-400 font-funnel_regular mt-2 mb-2 px-6" style={{fontSize: FONT.xxs}}>
+            <Text className="text-center text-gray-400 font-funnel_regular mt-2 mb-2 px-6 italic" style={{fontSize: FONT.xxs}}>
               This AI chatbot is intended for psychological first aid only. Please seek professional psychological intervention for mental health conditions.
             </Text>
           </View>

@@ -7,6 +7,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
+import { scale } from "react-native-size-matters";
 
 export default function MonthlyMood() {
   const { moods, deleteMood } = useMoodStore();
@@ -60,11 +61,11 @@ export default function MonthlyMood() {
                 <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}> Moods for {formatSelectedDate(selectedDate)} </Text>
                 <TouchableOpacity activeOpacity={0.7} onPress={clearFilter} className="flex-row items-center gap-1 bg-gray-100 px-3 py-1 rounded-full" >
                   <Text className="font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}> Clear filter </Text>
-                  <RemixIcon name="close-line" size={14} color="#666"/>
+                  <RemixIcon name="close-line" size={scale(12)} color="#666"/>
                 </TouchableOpacity>
               </View>
 
-              <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled showsVerticalScrollIndicator={true}>
+              <ScrollView className="gap-2 py-4" style={{maxHeight: 500}} nestedScrollEnabled showsVerticalScrollIndicator={true}>
                 {!selectedDate ? (
                   <View></View>
                 ) : filteredMoods.length === 0 ? (
@@ -76,11 +77,8 @@ export default function MonthlyMood() {
                 ) : (
                   <>
                     {filteredMoods.map((mood, index) => (
-                      <View key={index}>
-                        <MoodCard 
-                          moodData={mood}
-                          handleDeleteMood={() => handleDeleteMood(mood.id)}
-                        />
+                      <View key={index} className="">
+                        <MoodCard moodData={mood} />
                       </View>
                     ))}
                   </>          

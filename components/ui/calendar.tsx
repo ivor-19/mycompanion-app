@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import React, { ReactElement, useState } from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import RemixIcon from 'react-native-remix-icon';
+import { scale } from 'react-native-size-matters';
 
 interface CalendarProps {
   initialDate?: Date;
@@ -94,7 +95,7 @@ const Calendar: React.FC<CalendarProps> = ({
     for (let i = 0; i < firstDay; i++) {
       days.push(
         <View key={`empty-${i}`} style={styles.dayCell}>
-          <Text style={styles.emptyDay}></Text>
+          <Text style={{fontSize: FONT.xs}}></Text>
         </View>
       );
     }
@@ -122,8 +123,8 @@ const Calendar: React.FC<CalendarProps> = ({
         >
           {/* Show multiple moods if they exist for this date */}
           {moodsForDate.length > 0 && (
-            <View style={styles.moodContainer}>
-              <View style={styles.moodRow}>
+            <View className='items-center mb-2'>
+              <View className='flex-row items-center justify-center'>
                 {moodsForDate.map((mood, index) => (
                   <Image 
                     key={`${mood.date}-${index}`}
@@ -145,7 +146,7 @@ const Calendar: React.FC<CalendarProps> = ({
                 const remainingMoods = totalMoodsForDate - maxMoodsPerDay;
                 
                 return remainingMoods > 0 && (
-                  <Text style={styles.moodCount}>+ {remainingMoods} more</Text>
+                  <Text className='flex-row text-center font-funnel_regular mt-1 text-[#666]' style={{fontSize: FONT.xxs}}>+ {remainingMoods} more</Text>
                 );
               })()}
             </View>
@@ -169,10 +170,10 @@ const Calendar: React.FC<CalendarProps> = ({
   return (
     <View style={[styles.container, containerStyle]}>
       {/* Header with month/year and navigation */}
-      <View style={styles.header}>
+      <View className='flex-row justify-between items-center mb-6'>
         {showNavigationButtons && (
           <TouchableOpacity onPress={() => navigateMonth(-1)}>
-            <RemixIcon name='arrow-left-s-line' size={30}/>
+            <RemixIcon name='arrow-left-s-line' size={scale(24)}/>
           </TouchableOpacity>
         )}
         
@@ -182,22 +183,22 @@ const Calendar: React.FC<CalendarProps> = ({
         
         {showNavigationButtons && (
           <TouchableOpacity onPress={() => navigateMonth(1)}>
-            <RemixIcon name='arrow-right-s-line' size={30}/>
+            <RemixIcon name='arrow-right-s-line' size={scale(24)}/>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Day names header */}
-      <View style={styles.dayNamesRow}>
+      <View className='flex-row'>
         {dayNames.map((day: string) => (
-          <View key={day} style={styles.dayNameCell}>
+          <View key={day} className='flex-1 items-center'>
             <Text className='font-funnel_regular' style={{fontSize: FONT.xs}}>{day}</Text>
           </View>
         ))}
       </View>
 
       {/* Calendar grid */}
-      <View style={styles.calendarGrid}>
+      <View className='flex-wrap flex-row'>
         {renderCalendarDays()}
       </View>
       <Text className='text-center font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Select a date to see mood entries</Text>
@@ -220,60 +221,22 @@ const styles = StyleSheet.create({
     elevation: 5,
     margin: 10
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  dayNamesRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  dayNameCell: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  calendarGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
   dayCell: {
     width: '14.28%', // 100% / 7 days
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emptyDay: {
-    fontSize: 16,
-  },
-  moodContainer: {
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  moodRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   moodEmoji: {
-    height: 20,
-    width: 20,
+    height: scale(16),
+    width: scale(16),
   },
   smallMoodEmoji: {
-    height: 16,
-    width: 16,
+    height: scale(14),
+    width: scale(14),
   },
   overlappingEmoji: {
-    marginLeft: -6, // Overlap emojis slightly when there are multiple
-  },
-  moodCount: {
-    fontSize: 9,
-    color: '#666',
-    fontWeight: 'bold',
-    marginTop: 1,
-    textAlign: 'center',
+    marginLeft: scale(-5), // Overlap emojis slightly when there are multiple
   },
 });
 

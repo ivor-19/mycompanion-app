@@ -1,6 +1,7 @@
 import Button from '@/components/custom/Button';
 import GBackground from '@/components/custom/GBackground';
 import { FONT } from '@/lib/scale';
+import { secureStorage } from '@/lib/secureStorage';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { AnimatePresence, MotiView } from 'moti';
@@ -67,9 +68,14 @@ const OnboardingScreen: React.FC = () => {
     setCurrentIndex(index);
   };
 
-  const handleGetStarted = (): void => {
-    console.log('Get started');
-    router.replace('/home')
+  const handleGetStarted = async () => {
+    try{
+      await secureStorage.setItem("hasOnboarded", "true")
+      console.log('hasOnboarded');
+      router.replace('/home')
+    } catch (error) {
+      console.error("Error saving onboarding state", error);
+    }
   };
 
   const renderDots = (): React.ReactElement => {
@@ -243,16 +249,7 @@ const OnboardingScreen: React.FC = () => {
           </View>
 
           {/* Dots Indicator at Bottom */}
-          <MotiView
-            from={{ opacity: 0, translateY: 50 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{
-              type: 'timing',
-              duration: 500,
-              delay: 300,
-            }}
-            className="px-8 pb-8"
-          >
+          <MotiView from={{ opacity: 0, translateY: 50 }} animate={{ opacity: 1, translateY: 0 }} transition={{ type: 'timing', duration: 500, delay: 300, }} className="px-8 pb-8" >
             {renderDots()}
           </MotiView>
         </MotiView>

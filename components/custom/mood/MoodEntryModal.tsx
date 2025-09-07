@@ -175,8 +175,8 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
         <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" >
           <AlertDialogHeader className='w-full'> 
             <View className='items-center gap-2' style={{ width: '100%' }}>
-              <Image source={getEmojiByMood(moodText)} style={{height: 50, width: 50}}/>
-              <AlertDialogTitle className='font-funnel_semi'>{moodText}</AlertDialogTitle>
+              <Image source={getEmojiByMood(moodText)} style={{height: scale(42), width: scale(42)}}/>
+              <AlertDialogTitle className='font-funnel_semi' style={{fontSize: FONT.md}}>{moodText}</AlertDialogTitle>
               <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
                 <Text className="font-nt_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime}</Text>
               </View> 
@@ -184,7 +184,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
             
             <View className='gap-2'>
               <View className='flex-row gap-2 items-center'>
-                <RemixIcon name='heart-fill' size={16} color='#FF90BC'/>
+                <RemixIcon name='heart-fill' size={scale(14)} color='#FF90BC'/>
                 <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>What's on your mind?</Text>
               </View>
               <View className='w-full border-[1px] rounded-xl border-gray-300 p-2' style={{minHeight: 80}}>
@@ -207,7 +207,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
               
               <View className='gap-2'>
                 <View className='flex-row gap-2 items-center'>
-                  <RemixIcon name='bard-fill' size={16} color='#FFCF36'/>
+                  <RemixIcon name='bard-fill' size={scale(14)} color='#FFCF36'/>
                   <Text className='font-nt_regular' style={{fontSize: FONT.xs}}>Capture the moment</Text>
                 </View>
                 
@@ -268,7 +268,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
                     >
                       <View className='items-center gap-2'>
                         <View className={`p-3 rounded-full ${ selectedImages.length >= 5 ? 'bg-gray-200' : 'bg-blue-100' }`}>
-                          <RemixIcon name='camera-line' size={24} color={selectedImages.length >= 5 ? '#9ca3af' : '#3b82f6'} />
+                          <RemixIcon name='camera-line' size={scale(20)} color={selectedImages.length >= 5 ? '#9ca3af' : '#3b82f6'} />
                         </View>
                         <View className='items-center'>
                           <Text className={`font-nt_semi ${ selectedImages.length >= 5 ? 'text-gray-400' : 'text-blue-700' }`} style={{fontSize: FONT.xs}} > Camera </Text>
@@ -291,7 +291,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
                     >
                       <View className='items-center gap-2'>
                         <View className={`p-3 rounded-full ${ selectedImages.length >= 5 ? 'bg-gray-200' : 'bg-purple-100' }`}>
-                          <RemixIcon name='image-line' size={24} color={selectedImages.length >= 5 ? '#9ca3af' : '#8b5cf6'} />
+                          <RemixIcon name='image-line' size={scale(20)} color={selectedImages.length >= 5 ? '#9ca3af' : '#8b5cf6'} />
                         </View>
                         <View className='items-center'>
                           <Text className={`font-nt_semi ${ selectedImages.length >= 5 ? 'text-gray-400' : 'text-purple-700' }`} style={{fontSize: FONT.xs}} > Gallery </Text>

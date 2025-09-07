@@ -14,12 +14,12 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { scale } from "react-native-size-matters";
 
 const emotions = [
-  { moodText: 'Happy', colors: ['#FFFDE4', '#FFE259', '#FFA751'] },
-  { moodText: 'Sad', colors: ['#89F7FE', '#66A6FF', '#0052D4'] },
-  { moodText: 'Angry', colors: ['#FF512F', '#F09819', '#DD2476'] }, 
-  { moodText: 'Anxious', colors: ['#F0E68C', '#DDA0DD', '#9370DB'] },
-  { moodText: 'Neutral', colors: ['#2C3E50', '#4CA1AF', '#BBD2C5'] }, 
-  { moodText: 'Excited', colors: ['#FF61D2', '#FE9090', '#FFD194'] }, 
+  { moodText: 'Happy', colors: ['#FFFDE490', '#FFE25990', '#FFA75190'] },
+  { moodText: 'Sad', colors: ['#89F7FE90', '#66A6FF90', '#0052D490'] },
+  { moodText: 'Angry', colors: ['#FF512F90', '#F0981990', '#DD247690'] }, 
+  { moodText: 'Anxious', colors: ['#F0E68C90', '#DDA0DD90', '#9370DB90'] },
+  { moodText: 'Neutral', colors: ['#2C3E5090', '#4CA1AF90', '#BBD2C590'] }, 
+  { moodText: 'Excited', colors: ['#FF61D290', '#FE909090', '#FFD19490'] }, 
 ] as const ;
 
 export default function DailyMood() {
@@ -29,27 +29,26 @@ export default function DailyMood() {
   const { currentTime, currentDay, currentDate } = useTimeStore();
   const { moods, deleteMood } = useMoodStore();
 
+  const [openDelete, setOpenDelete] = useState(false)
+  const [selectedEntry, setSelectedEntry] = useState<any | null>(null)
+
 
   const handlePress = async (emotion: any) => {
     setSelectedEmotion(emotion.moodText) // Extract just the moodText string
     setOpen(true)
   }
 
-  const handleDeleteMood = async (id: string) => {
-   deleteMood(id)
-  }
+  const isFocused = useIsFocused();
 
-    const isFocused = useIsFocused();
-  
-    if (!isFocused) {
-      return null; // unmount map completely when not focused
-    }
+  if (!isFocused) {
+    return null; // unmount map completely when not focused
+  }
 
   return (
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
         <View className="flex-1 gap-4">       
-          <View className="items-center px-4 py-6 rounded-3xl bg-[#FFFCFF] m-4">
+          <View className="items-center px-4 py-6 rounded-3xl bg-[#FFFCFF] m-4" style={{elevation: 2, shadowColor: 'gray'}}>
             <Text className="font-funnel_semi text-gray-800 mb-2" style={{fontSize: FONT.sm}}> How are you feeling today?</Text>
             <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
               <Text className="font-funnel_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime} </Text>
@@ -65,7 +64,7 @@ export default function DailyMood() {
                   style={{borderRadius: 20, overflow: 'hidden', height: scale(100), width: scale(80)}}
                 >                                                     
                   <TouchableOpacity className="w-full h-full items-center justify-center gap-3" activeOpacity={0.7} onPress={() => handlePress(emotion)}>
-                    <Image source={getEmojiByMood(emotion.moodText)} contentFit="contain" style={{width: 40, height: 40}} />
+                    <Image source={getEmojiByMood(emotion.moodText)} contentFit="contain" style={{width: scale(32), height: scale(32)}} />
                     <Text className="font-funnel_bold text-white" style={{fontSize: FONT.xs, textShadowColor: 'black',   textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 1,}}> {emotion.moodText} </Text>
                   </TouchableOpacity>                                                  
                 </LinearGradient>
@@ -79,19 +78,15 @@ export default function DailyMood() {
             <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled>
               {moods.length === 0 ? (
                 <View className="py-8 items-center justify-center">
-                  <Text className="font-nt_regular text-gray-500" style={{fontSize: FONT.xs}}>
-                    No mood entries yet.
-                  </Text>
+                  <Text className="font-nt_regular text-gray-500" style={{fontSize: FONT.xs}}> No mood entries yet. </Text>
                 </View>
 
               ):(
                 <>
                   {moods.map((mood, index) => (
                     <View key={index}>
-                      <MoodCard 
-                        moodData={mood}
-                        handleDeleteMood={() => handleDeleteMood(mood.id)}
-                      />
+                      <MoodCard moodData={mood} />
+                      
                     </View>
                   ))}
                 </>          

@@ -1,10 +1,10 @@
 import { FONT } from '@/lib/scale'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { Image } from 'expo-image'
 import * as Linking from "expo-linking"
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import RemixIcon from 'react-native-remix-icon'
+import { scale } from 'react-native-size-matters'
 import Separator from '../Separator'
 
 type Details = {
@@ -64,10 +64,10 @@ export default function InfoBottomSheet({ details, open, onClose, onLocationPres
     >
       <View className='flex-1 p-4'> 
         <View className="flex-row items-center gap-2">
-          <RemixIcon name="list-check-2" size={20} color="#FF90BC"/>
+          <RemixIcon name="list-check-2" size={scale(18)} color="#FF90BC"/>
           <Text className="font-nt_semi flex-1" style={{fontSize: FONT.sm}}> Location Info </Text>
           <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
-            <RemixIcon name="close-line" size={20} color="#6b7280"/>
+            <RemixIcon name="close-line" size={scale(18)} color="#6b7280"/>
           </TouchableOpacity>
         </View>
         
@@ -78,60 +78,50 @@ export default function InfoBottomSheet({ details, open, onClose, onLocationPres
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
         >
-          <View className="p-3 gap-3">
-  {/* Header */}
-  <View className="flex-row items-center gap-3">
-    <Image source={require('@/assets/images/hospital.png')} style={{height: 36, width: 36}}/>
-    <View className="flex-1">
-      <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>{details?.title}</Text>
-      <Text className="font-funnel_regular text-gray-600" style={{fontSize: FONT.xs}}>{details?.address}</Text>
-    </View>
-  </View>
+        <View className="p-3 gap-3">
+          {/* Header */}
+          <View className="flex-row items-center gap-3">
+            <View className="flex-1">
+              <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>{details?.title}</Text>
+              <Text className="font-funnel_regular text-gray-600" style={{fontSize: FONT.xs}}>{details?.address}</Text>
+            </View>
+          </View>
 
-  {/* Info List */}
-  <View className="bg-white rounded-xl border border-gray-200">
-    {details?.hours && (
-      <View className="flex-row items-center gap-2 p-3 border-b border-gray-100">
-        <RemixIcon name="time-line" size={18} color="gray"/>
-        <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs}}>
-          {details?.hours}
-        </Text>
-      </View>
-    )}
-    {details?.contact && (
-      <View className="flex-row items-center gap-2 p-3">
-        <RemixIcon name="phone-line" size={18} color="gray"/>
-        <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs}}>
-          {details?.contact}
-        </Text>
-      </View>
-    )}
-  </View>
+          {/* Info List */}
+          <View className="bg-white rounded-xl border border-gray-200">
+            {details?.hours && (
+              <View className="flex-row items-center gap-2 p-3 border-b border-gray-100">
+                <RemixIcon name="time-line" size={scale(16)} color="gray"/>
+                <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs}}>
+                  {details?.hours}
+                </Text>
+              </View>
+            )}
+            {details?.contact && (
+              <View className="flex-row items-center gap-2 p-3">
+                <RemixIcon name="phone-line" size={scale(16)} color="gray"/>
+                <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs}}>
+                  {details?.contact}
+                </Text>
+              </View>
+            )}
+          </View>
 
-  {/* Actions */}
-  <View className="flex-row gap-2">
-    <TouchableOpacity
-      onPress={handleLocatePress}
-      className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg border border-gray-200 bg-white"
-      activeOpacity={0.8}
-    >
-      <RemixIcon name="focus-3-fill" size={18} color="gray"/>
-      <Text className="font-funnel_semi text-gray-600" style={{fontSize: FONT.xs}}>Locate</Text>
-    </TouchableOpacity>
+          {/* Actions */}
+          <View className="flex-row gap-2">
+            <TouchableOpacity onPress={handleLocatePress} className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg border border-gray-200 bg-white" activeOpacity={0.8} >
+              <RemixIcon name="focus-3-fill" size={scale(16)} color="gray"/>
+              <Text className="font-funnel_semi text-gray-600" style={{fontSize: FONT.xs}}>Locate</Text>
+            </TouchableOpacity>
 
-    {details?.contact && (
-      <TouchableOpacity
-        onPress={() => Linking.openURL(`tel:${details?.contact}`)}
-        className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg bg-[#FF90BC]"
-        activeOpacity={0.8}
-      >
-        <RemixIcon name="phone-fill" size={18} color="white"/>
-        <Text className="font-funnel_semi text-white" style={{fontSize: FONT.xs}}>Call</Text>
-      </TouchableOpacity>
-    )}
-  </View>
-</View>
-
+            {details?.contact && (
+              <TouchableOpacity onPress={() => Linking.openURL(`tel:${details?.contact}`)} className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg bg-[#FF90BC]" activeOpacity={0.8} >
+                <RemixIcon name="phone-fill" size={scale(16)} color="white"/>
+                <Text className="font-funnel_semi text-white" style={{fontSize: FONT.xs}}>Call</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
         </BottomSheetScrollView>
       </View>
     </BottomSheet>

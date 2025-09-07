@@ -4,7 +4,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
 import RemixIcon from 'react-native-remix-icon'
-import Card from '../Card'
+import { scale } from 'react-native-size-matters'
 import Separator from '../Separator'
 import EmergencyContact from './EmergencyContact'
 
@@ -75,12 +75,12 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
     >
       <View className='flex-1 p-4'> 
         <View className="flex-row items-center gap-2 mb-4">
-          <RemixIcon name="list-check-2" size={20} color="#FF90BC"/>
+          <RemixIcon name="list-check-2" size={scale(18)} color="#FF90BC"/>
           <Text className="font-nt_semi flex-1" style={{fontSize: FONT.sm}}>
             Available Clinics ({filteredMarkers.length})
           </Text>
           <TouchableOpacity onPress={closeSheet}>
-            <RemixIcon name="close-line" size={20} color="#6b7280"/>
+            <RemixIcon name="close-line" size={scale(18)} color="#6b7280"/>
           </TouchableOpacity>
         </View>
         
@@ -91,8 +91,8 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
         >
-          <Card className="flex-row items-center bg-white w-full rounded-full border-2 border-gray-100 py-3 px-4 mb-6 shadow-sm">
-            <RemixIcon name="search-2-line" size={20} color="#6b7280" />
+          <View className="flex-row items-center bg-white w-full rounded-full border-2 border-gray-100 py px-4 mb-6 shadow-sm">
+            <RemixIcon name="search-2-line" size={scale(16)} color="#6b7280" />
             <TextInput
               className="font-funnel_regular flex-1 text-black ml-3"
               placeholder="Search clinics, hospitals..."
@@ -106,10 +106,10 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
             />
             {searchText.length > 0 && (
               <TouchableOpacity onPress={clearSearch} className="ml-2">
-                <RemixIcon name="close-circle-fill" size={18} color="#6b7280"/>
+                <RemixIcon name="close-circle-fill" size={scale(16)} color="#6b7280"/>
               </TouchableOpacity>
             )}
-          </Card>     
+          </View>     
           
           {filteredMarkers.length > 0 ? (
             <View className='gap-4'>

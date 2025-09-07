@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { secureStorage } from '@/lib/secureStorage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -27,18 +27,6 @@ interface MoodStore {
   updateMoodImages: (id: string, images: string[]) => void; // Helper function for updating images
 }
 
-// Custom SecureStore adapter (async)
-const secureStorage = {
-  getItem: (name: string): Promise<string | null> => {
-    return SecureStore.getItemAsync(name);
-  },
-  setItem: (name: string, value: string): Promise<void> => {
-    return SecureStore.setItemAsync(name, value);
-  },
-  removeItem: (name: string): Promise<void> => {
-    return SecureStore.deleteItemAsync(name);
-  },
-};
 
 const useMoodStore = create<MoodStore>()(
   persist(

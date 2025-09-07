@@ -9,6 +9,7 @@ import { router } from "expo-router";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { scale } from "react-native-size-matters";
 
 // Mood type from store
 export type Mood = {
@@ -175,7 +176,7 @@ export default function Home() {
                 {quickActions.map((action, index) => (
                   <TouchableOpacity key={index} onPress={() => router.push(action?.route as any)} className="bg-white rounded-3xl p-4 items-center flex-1 mx-1" style={{elevation: 2, shadowColor: 'gray'}} activeOpacity={0.7}>
                     <View className="w-12 h-12 rounded-full items-center justify-center mb-2" style={{backgroundColor: action.color + '20'}}>
-                      <RemixIcon name={action.icon as any} size={20} color={action.color}/>
+                      <RemixIcon name={action.icon as any} size={scale(18)} color={action.color}/>
                     </View>
                     <Text className="font-funnel_regular text-center" style={{fontSize: FONT.xxs}}>{action.title}</Text>
                   </TouchableOpacity>
@@ -188,17 +189,17 @@ export default function Home() {
               <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.md}}>Today's Insights</Text>
               <View className="bg-white rounded-3xl p-5" style={{elevation: 2, shadowColor: 'gray'}}>
                 <View className="flex-row items-center gap-3 mb-4">
-                  <RemixIcon name="lightbulb-line" size={24} color="#FFB347"/>
+                  <RemixIcon name="lightbulb-line" size={scale(20)} color="#FFB347"/>
                   <Text className="font-funnel_semi flex-1" style={{fontSize: FONT.sm}}>Daily Affirmation</Text>
                 </View>
                 <Text className="font-funnel_regular italic mb-4" style={{fontSize: FONT.xs, color: '#666'}}>{affirmation}</Text>
                 <View className="flex-row justify-between">
                   <View className="flex-row items-center gap-2">
-                    <RemixIcon name="fire-line" size={16} color="#FF6B9D"/>
+                    <RemixIcon name="fire-line" size={scale(14)} color="#FF6B9D"/>
                     <Text className="font-funnel_regular" style={{fontSize: FONT.xxs}}>{currentStreak}-day streak</Text>
                   </View>
                   <View className="flex-row items-center gap-2">
-                    <RemixIcon name="heart-line" size={16} color="#6ED0D0"/>
+                    <RemixIcon name="heart-line" size={scale(14)} color="#6ED0D0"/>
                     <Text className="font-funnel_regular" style={{fontSize: FONT.xxs}}>Mood: {currentMood}</Text>
                   </View>
                 </View>
@@ -211,15 +212,15 @@ export default function Home() {
               <View className="bg-white rounded-3xl p-5" style={{elevation: 2, shadowColor: 'gray'}}>
                 <View className="flex-row justify-between mb-4">
                   <View className="items-center flex-1">
-                    <Text className="font-funnel_bold text-2xl" style={{color: '#FF6B9D'}}>{sessions}</Text>
+                    <Text className="font-funnel_bold" style={{color: '#FF6B9D', fontSize: FONT.xl}}>{sessions}</Text>
                     <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: '#666'}}>Entries</Text>
                   </View>
                   <View className="items-center flex-1">
-                    <Text className="font-funnel_bold text-2xl" style={{color: '#6ED0D0'}}>{currentStreak}</Text>
+                    <Text className="font-funnel_bold" style={{color: '#6ED0D0', fontSize: FONT.xl}}>{currentStreak}</Text>
                     <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: '#666'}}>Day Streak</Text>
                   </View>
                   <View className="items-center flex-1">
-                    <Text className="font-funnel_bold text-2xl" style={{color: '#FFB347'}}>{wellnessScore}%</Text>
+                    <Text className="font-funnel_bold" style={{color: '#FFB347', fontSize: FONT.xl}}>{wellnessScore}%</Text>
                     <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: '#666'}}>Wellness</Text>
                   </View>
                 </View>
@@ -240,7 +241,7 @@ export default function Home() {
                       name={recentTrend === 'Great' ? 'emotion-happy-line' : 
                            recentTrend === 'Good' ? 'emotion-normal-line' : 
                            recentTrend === 'Fair' ? 'emotion-unhappy-line' : 'emotion-sad-line'} 
-                      size={16} 
+                      size={scale(14)} 
                       color={recentTrend === 'Great' ? '#4ADE80' : 
                             recentTrend === 'Good' ? '#6ED0D0' : 
                             recentTrend === 'Fair' ? '#FFB347' : '#FF6B9D'}
@@ -249,7 +250,7 @@ export default function Home() {
                   </View>
                   <TouchableOpacity className="flex-row items-center gap-1" onPress={() => router.push('/weekly-mood')} activeOpacity={0.6}>
                     <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: '#6ED0D0'}}>View Details</Text>
-                    <RemixIcon name="arrow-right-s-line" size={16} color="#6ED0D0"/>
+                    <RemixIcon name="arrow-right-s-line" size={scale(14)} color="#6ED0D0"/>
                   </TouchableOpacity>
                 </View>
               </View>

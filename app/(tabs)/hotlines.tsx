@@ -12,6 +12,7 @@ import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { scale } from "react-native-size-matters";
 
 type LatLng = {
   latitude: number;
@@ -141,12 +142,7 @@ export default function Hotlines() {
       <PageLayout headerTitle="Clinic Locations">
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#ff0066" />
-          <Text
-            className="mt-2 text-gray-600 font-funnel_semi"
-            style={{ fontSize: FONT.sm }}
-          >
-            Loading map...
-          </Text>
+          <Text className="mt-2 text-gray-600 font-funnel_semi" style={{ fontSize: FONT.sm }} > Loading map... </Text>
         </View>
         <ListBottomSheet onLocationPress={handleLocationPress} />
       </PageLayout>
@@ -157,19 +153,9 @@ export default function Hotlines() {
     <PageLayout headerTitle="Clinic Locations">
       <View className="flex-1 w-full relative items-center">
         {totalDistance > 0 && (
-          <View className="flex-col items-center justify-between absolute top-2 bg-white/80 w-[40%] rounded-full border-2 border-gray-400 z-10 py-2 px-6 ">
-            <Text
-              className="font-funnel_semi text-center"
-              style={{ fontSize: FONT.xs }}
-            >
-              Distance
-            </Text>
-            <Text
-              className="font-funnel_semi text-center"
-              style={{ fontSize: FONT.xs }}
-            >
-              {totalDistance.toFixed(2)} km
-            </Text>
+          <View className="flex-col items-center justify-between absolute top-2 bg-blue-50 w-[40%] rounded-full border border-blue-200 z-10 py-1 px-6 ">
+            <Text className="font-funnel_semi text-center text-blue-700" style={{ fontSize: FONT.xs }} > Distance </Text>
+            <Text className="font-funnel_semi text-center text-blue-700" style={{ fontSize: FONT.xs }} > {totalDistance.toFixed(2)} km </Text>
           </View>
         )}
 
@@ -188,11 +174,7 @@ export default function Hotlines() {
             >
               {/* User location marker */}
               {userLocation && (
-                <Marker
-                  coordinate={userLocation}
-                  title="Your Location"
-                  pinColor="blue"
-                />
+                <Marker coordinate={userLocation} title="Your Location" pinColor="blue" />
               )}
 
               {/* ✅ Route polyline */}
@@ -228,10 +210,7 @@ export default function Hotlines() {
                     });
                   }}
                 >
-                  <Image
-                    source={marker.image}
-                    style={{ height: 24, width: 24 }}
-                  />
+                  <Image source={marker.image} style={{ height: scale(22), width: scale(22) }} />
                 </Marker>
               ))}
             </MapView>
