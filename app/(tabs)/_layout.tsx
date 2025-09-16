@@ -53,13 +53,26 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
+        name="locations"
+        options={{
+          title: 'Locations',
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
+              <RemixIcon name={'map-pin-fill'} color={color} size={focused ? scale(28) : scale(22)} />
+            </View>
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="hotlines"
         options={{
           title: 'Hotlines',
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
-              <RemixIcon name={'map-pin-fill'} color={color} size={focused ? scale(28) : scale(22)} />
+              <RemixIcon name={'phone-fill'} color={color} size={focused ? scale(28) : scale(22)} />
             </View>
           ),
         }}

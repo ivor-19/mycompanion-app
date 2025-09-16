@@ -33,13 +33,25 @@ export default function EmergencyContact({ details, type, onLocationPress }: Pro
     <View className="w-full rounded-xl flex-row items-center border-2 border-gray-100 bg-white p-4 gap-4" style={{elevation: 4, shadowColor: 'gray'}}>
       {/* <Image source={image} style={{height: 50, width: 50}} /> */}
       
-      <View className="flex-1">
+      <View className="flex-1 gap-2">
         <Text className="font-nt_semi text-sm leading-4">{details?.title}</Text>
-        {details?.contact && <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}>{details?.contact}</Text>}
-        {details?.address && <Text className="font-funnel_regular" style={{fontSize: FONT.xxs}}>{details?.address}</Text>}
+        <View>
+          {details?.contact && 
+            <View className="flex-row items-start">
+              <RemixIcon name="phone-fill" size={scale(10)} color="gray" />
+              <Text className="ml-1 font-funnel_regular text-gray-600" style={{fontSize: FONT.xxs}}>{details?.contact}</Text>
+            </View>
+          }
+          {details?.address && 
+            <View className="flex-row items-start">
+              <RemixIcon name="map-pin-2-fill" size={scale(10)} color="gray" />
+              <Text className="ml-1 font-funnel_regular text-gray-600" style={{fontSize: FONT.xxs}}>{details?.address}</Text>
+            </View>
+          }
+        </View>
       </View>
       
-      <View className="flex-row gap-2">
+      <View className="flex-row">
         {details?.contact &&
           <TouchableOpacity activeOpacity={0.6}  onPress={() => Linking.openURL(`tel:${details?.contact}`)}>
             <RemixIcon name="phone-fill" size={scale(18)} color="#FF90BC" />

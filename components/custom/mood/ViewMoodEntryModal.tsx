@@ -21,6 +21,7 @@ import {
 } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 import { scale } from "react-native-size-matters";
+import DeleteModal from "../modal/DeleteModal";
 
 type MoodsData = {
   id: string;
@@ -80,9 +81,11 @@ export default function ViewMoodEntryModal({
     setFullScreenImage(moodData.images[newIndex]);
   };
 
-  const handleDeleteMood = async (id: string) => {
-    deleteMood(id);
-  };
+  // const handleDeleteMood = async (id: string) => {
+  //   deleteMood(id);
+  // };
+
+  const [openDelete, setOpenDelete] = useState(false)
 
   return (
     <>
@@ -153,7 +156,7 @@ export default function ViewMoodEntryModal({
 
           {/* Footer */}
           <AlertDialogFooter className="flex-row w-full">
-            <AlertDialogAction className=" bg-red-50 border-[1px] border-red-100" onPress={() => handleDeleteMood(moodData.id)} >
+            <AlertDialogAction className=" bg-red-50 border-[1px] border-red-100" onPress={() => setOpenDelete(true)} >
               <RemixIcon name="delete-bin-fill" size={scale(18)} color="#FF6B9D" />
             </AlertDialogAction>
             <AlertDialogAction className="flex-1 flex-row items-center justify-center bg-[#FF90BC]" onPress={handleClose} >
@@ -210,6 +213,7 @@ export default function ViewMoodEntryModal({
           </Pressable>
         </View>
       </Modal>
+      <DeleteModal open={openDelete} setOpen={setOpenDelete} moodsData={moodData}/>
     </>
   );
 }

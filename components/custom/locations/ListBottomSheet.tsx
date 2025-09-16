@@ -126,20 +126,11 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
           ) : (
             <View className="items-center justify-center py-12">
               <RemixIcon name="search-line" size={48} color="#d1d5db" />
-              <Text className="text-gray-500 font-funnel_regular mt-4" style={{fontSize: FONT.sm}}>
-                No clinics found
-              </Text>
-              <Text className="text-gray-400 font-funnel_regular text-center mt-2" style={{fontSize: FONT.xs}}>
-                Try searching with different keywords
-              </Text>
+              <Text className="text-gray-500 font-funnel_regular mt-4" style={{fontSize: FONT.sm}}> No clinics found </Text>
+              <Text className="text-gray-400 font-funnel_regular text-center mt-2" style={{fontSize: FONT.xs}}> Try searching with different keywords </Text>
               {searchText.length > 0 && (
-                <TouchableOpacity 
-                  onPress={clearSearch}
-                  className="mt-4 bg-pink-100 px-4 py-2 rounded-full"
-                >
-                  <Text className="text-pink-600 font-funnel_medium" style={{fontSize: FONT.xs}}>
-                    Clear Search
-                  </Text>
+                <TouchableOpacity onPress={clearSearch} className="mt-4 bg-pink-100 px-4 py-2 rounded-full" >
+                  <Text className="text-pink-600 font-funnel_medium" style={{fontSize: FONT.xs}}> Clear Search </Text>
                 </TouchableOpacity>
               )}
             </View>

@@ -106,6 +106,7 @@ export default function Home() {
     { icon: "emotion-happy-line", title: "Mood Check", color: "#FF6B9D", route: '/daily-mood' },
     { icon: "map-pin-line", title: "Find a Clinic", color: "#4ECDC4", route: '/hotlines' },
     { icon: "line-chart-fill", title: "Mood Insights", color: "#FFB347", route: '/monthly-mood' },
+    { icon: "phone-fill", title: "Hotlines", color: "#FF5757", route: '/hotlines' },
   ];
 
   const resources = [
@@ -160,7 +161,7 @@ export default function Home() {
               </View>
               <View className="w-[60%] flex-col justify-center items-end gap-4 ">
                 <View className="flex-col gap-2"> 
-                  <Text className="font-cb text-white leading-7 text-right" style={{fontSize: FONT.xl}}>A SAFE SPACE FOR YOUR THOUGHTS</Text>
+                  <Text className="font-cb text-white leading-7 text-right" style={{fontSize: FONT.xl}}>MEET EUNOIA YOUR AI COMPANION</Text>
                   <Text className="font-funnel_regular text-right text-white  leading-5 opacity-90" style={{fontSize: FONT.xs}}>
                     Begin your journey to better mental wellness today
                   </Text>

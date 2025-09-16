@@ -35,7 +35,7 @@ export default function Index() {
             <Text className="font-funnel_regular text-sm text-gray-600 text-center">A safe space in your pocket, where guidance{'\n'} and care are always with you. </Text>
           </View>
           <View className="flex-2 w-full items-center justify-center gap-4">
-            <Button text="Continue" fontStyle="font-nt_semi" style="bg-white h-20" onPress={handleContinue}/>
+            <Button text="Continue" fontStyle="font-nt_semi text-white" style="bg-[#FF90BC] py-6" onPress={handleContinue}/>
             {/* <Button text="Continue with Google" fontStyle="font-nt_semi" style="bg-white h-20" icon={require('../assets/icons/google.png')}/>*/}
             <Text className="text-xs text-gray-600 font-nt_regular">version 1.0</Text>
           </View>
