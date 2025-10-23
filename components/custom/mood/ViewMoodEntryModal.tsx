@@ -9,7 +9,9 @@ import {
 import { Text } from "@/components/ui/text";
 import { getEmojiByMood } from "@/helper/moodEmoji";
 import { FONT } from "@/lib/scale";
+import { useColorModeStore } from "@/stores/colorModeStore";
 import { useMoodStore } from "@/stores/moodStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { Image } from "expo-image";
 import { useState } from "react";
 import {
@@ -49,6 +51,8 @@ export default function ViewMoodEntryModal({
   const { deleteMood } = useMoodStore();
   const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore() 
 
   if (!moodData) return null;
 
@@ -90,15 +94,15 @@ export default function ViewMoodEntryModal({
   return (
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent className="items-center justify-center" style={{ width: scale(320), maxHeight: undefined, }} >
+        <AlertDialogContent className="items-center justify-center" style={{ width: scale(320), maxHeight: undefined, backgroundColor: mode.main, borderColor: mode.neutral}} >
           <AlertDialogHeader className="w-full">
             <View className="items-center gap-2 w-full">
               <Image source={getEmojiByMood(moodData.moodText)} style={{ height: scale(42), width: scale(42) }} />
-              <AlertDialogTitle className="font-funnel_semi" style={{fontSize: FONT.md}}>
+              <AlertDialogTitle className="font-funnel_semi" style={{fontSize: FONT.md, color: mode.textPrimary}}>
                 {moodData.moodText}
               </AlertDialogTitle>
-              <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
-                <Text className="font-nt_semi text-orange-800" style={{ fontSize: FONT.xs }} >
+              <View className="bg-orange-50 rounded-full px-6 py-3 mb-4" style={{backgroundColor: theme.primary + '20'}}>
+                <Text className="font-nt_semi" style={{ fontSize: FONT.xs, color: theme.accent }} >
                   {moodData.day}, {moodData.date}, {moodData.time}
                 </Text>
               </View>
@@ -107,29 +111,29 @@ export default function ViewMoodEntryModal({
             <View className="gap-2">
               {/* Note Section */}
               <View className="flex-row gap-2 items-center">
-                <RemixIcon name="booklet-fill" size={16} color="#FF90BC" />
-                <Text className="font-nt_regular" style={{ fontSize: FONT.xs }} > Note </Text>
+                <RemixIcon name="booklet-fill" size={16} color={theme.primary} />
+                <Text className="font-nt_regular" style={{ fontSize: FONT.xs, color: mode.textPrimary }} > Note </Text>
               </View>
-              <View className="w-full border-[1px] rounded-xl border-gray-300 p-3" style={{ minHeight: 80 }} >
-                <Text className="font-nt_regular text-left text-gray-700" style={{ fontSize: FONT.xs }} > {moodData.note} </Text>
+              <View className="w-full  p-3" style={{ minHeight: scale(72),  borderColor: mode.neutral, borderWidth: 1, borderRadius: 10}} >
+                <Text className="font-nt_regular text-left" style={{ fontSize: FONT.xs, color: mode.textSecondary }} > {moodData.note} </Text>
               </View>
 
               {/* Photos Section */}
               <View className="gap-2">
                 <View className="flex-row gap-2 items-center justify-between">
                   <View className="flex-row gap-2 items-center">
-                    <RemixIcon name="image-fill" size={16} color="#FF90BC" />
-                    <Text className="font-nt_regular" style={{ fontSize: FONT.xs }} > Captured Photo/s </Text>
+                    <RemixIcon name="image-fill" size={16} color={theme.primary} />
+                    <Text className="font-nt_regular" style={{ fontSize: FONT.xs, color: mode.textPrimary }} > Captured Photo/s </Text>
                   </View>
                   {(moodData.images ?? []).length > 0 && (
-                    <Text className="font-nt_regular" style={{ fontSize: FONT.xs }} >
+                    <Text className="font-nt_regular" style={{ fontSize: FONT.xs, color: mode.textSecondary }} >
                       {moodData.images?.length} Photo
                       {(moodData.images ?? []).length > 1 ? "s" : ""}
                     </Text>
                   )}
                 </View>
 
-                <View className="w-full border-2 border-dashed rounded-xl border-gray-300 p-3 items-center" style={{ minHeight: 60 }} >
+                <View className="w-full border-dashed p-3 items-center" style={{ minHeight: scale(54), borderRadius: 10, borderColor: mode.neutral, borderWidth: 2 }} >
                   {(moodData.images ?? []).length > 0 ? (
                     <ScrollView
                       horizontal
@@ -147,7 +151,7 @@ export default function ViewMoodEntryModal({
                       ))}
                     </ScrollView>
                   ) : (
-                    <Text className="font-nt_regular text-gray-500 text-center" style={{ fontSize: FONT.xxs }} > No photos attached </Text>
+                    <Text className="font-nt_regular text-gray-500 text-center" style={{ fontSize: FONT.xxs, color: mode.textSecondary }} > No photos attached </Text>
                   )}
                 </View>
               </View>
@@ -156,10 +160,10 @@ export default function ViewMoodEntryModal({
 
           {/* Footer */}
           <AlertDialogFooter className="flex-row w-full">
-            <AlertDialogAction className=" bg-red-50 border-[1px] border-red-100" onPress={() => setOpenDelete(true)} >
-              <RemixIcon name="delete-bin-fill" size={scale(18)} color="#FF6B9D" />
+            <AlertDialogAction onPress={() => setOpenDelete(true)} style={{backgroundColor: theme.secondary + '50'}}>
+              <RemixIcon name="delete-bin-fill" size={scale(18)} color={theme.primary} />
             </AlertDialogAction>
-            <AlertDialogAction className="flex-1 flex-row items-center justify-center bg-[#FF90BC]" onPress={handleClose} >
+            <AlertDialogAction className="flex-1 flex-row items-center justify-center" onPress={handleClose} style={{backgroundColor: theme.primary}}>
               <Text className="text-center font-nt_medium text-white"> Close </Text>
             </AlertDialogAction>
           </AlertDialogFooter>

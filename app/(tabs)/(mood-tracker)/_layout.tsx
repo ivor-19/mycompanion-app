@@ -3,7 +3,6 @@ import GBackground from "@/components/custom/GBackground";
 import PageLayout from "@/components/custom/layout/PageLayout";
 import MoodTab from "@/components/custom/mood/MoodTab";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 
 export default function MoodLayout() {
   return(
@@ -20,7 +19,6 @@ export default function MoodLayout() {
         </Stack> 
       </GBackground>
 
-      <StatusBar style="auto" />
     </PageLayout>
   )
 }

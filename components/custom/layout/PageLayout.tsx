@@ -1,6 +1,7 @@
 // Option 2: Updated PageLayout
+import { useColorModeStore } from "@/stores/colorModeStore";
 import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { scale } from "react-native-size-matters";
 import CustomHeader from "../CustomHeader";
 
 interface Props {
@@ -9,9 +10,11 @@ interface Props {
 }
 
 export default function PageLayout({ headerTitle, children }: Props) {
+  const { mode } = useColorModeStore()
+
   return(
-    <SafeAreaView className="flex-1 bg-white">
-      <View style={{ flex: 1 }}>
+    <View className="flex-1" style={{backgroundColor: mode.main}}>
+      <View style={{ flex: 1, paddingTop: scale(24)}}>
         {headerTitle &&
           <CustomHeader title={headerTitle}/>
         }
@@ -20,6 +23,6 @@ export default function PageLayout({ headerTitle, children }: Props) {
         </View>
        
       </View>
-    </SafeAreaView>
+    </View>
   )
 }

@@ -1,3 +1,5 @@
+import { useColorModeStore } from "@/stores/colorModeStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { View } from "react-native";
 import FloatingBlob from "./FloatingBlob";
@@ -9,8 +11,11 @@ interface Props {
 }
 
 export default function GBackground({ children, showBubbles, bubbleCount = 2 }: Props) {
-  const bubbleColors = ['#f5576c70', '#6ed0d0'];
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
+  const bubbleColors = theme.gradient;
   const bubbleSizes = [10, 20, 30];
+
   
   const generateBubbles = () => {
     const bubbles = [];
@@ -32,7 +37,7 @@ export default function GBackground({ children, showBubbles, bubbleCount = 2 }: 
 
   return (
     <LinearGradient
-      colors={["#FCF5FF", "#FAF0FF", "#fdd5df"]}
+      colors={mode.name === 'dark' ? mode.background : theme.mainGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       className="flex-1 w-full"

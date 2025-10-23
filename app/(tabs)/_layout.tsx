@@ -1,11 +1,13 @@
-import ChatBot from "@/components/custom/ChatBot";
+import { useColorModeStore } from "@/stores/colorModeStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { Tabs } from "expo-router";
 import { Pressable, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 import { scale } from "react-native-size-matters";
 
 export default function TabsLayout() {
-
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
   return (
     <>
      <Tabs
@@ -14,11 +16,12 @@ export default function TabsLayout() {
           tabBarLabelStyle: { margin: 6 },
           tabBarItemStyle: { padding: 12 },
           tabBarStyle: {
-            borderTopWidth: 2,
-            borderColor: '#F2F2F2',
+            borderTopWidth: 1,
+            borderColor: mode.neutral,
             height: 120,
+            backgroundColor: mode.main
           },
-          tabBarActiveTintColor: '#FF90BC',
+          tabBarActiveTintColor: theme.primary,
           tabBarInactiveTintColor: '#DCD1E3',
           tabBarButton: (props) => {
             const { ref, ...pressableProps } = props as any;
@@ -78,9 +81,22 @@ export default function TabsLayout() {
         }}
       />
 
+      <Tabs.Screen
+        name="appearance"
+        options={{
+          title: 'Appearance',
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
+              <RemixIcon name={'palette-fill'} color={color} size={focused ? scale(28) : scale(22)} />
+            </View>
+          ),
+        }}
+      />
+  
     </Tabs>
 
-      <ChatBot />
+      {/* <ChatBot /> */}
     </>
   );
 }

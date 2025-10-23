@@ -2,6 +2,7 @@ import GBackground from "@/components/custom/GBackground";
 import MoodCard from "@/components/custom/mood/MoodCard";
 import Calendar from "@/components/ui/calendar";
 import { FONT } from "@/lib/scale";
+import { useColorModeStore } from "@/stores/colorModeStore";
 import { useMoodStore } from "@/stores/moodStore";
 import { useIsFocused } from "@react-navigation/native";
 import { useState } from "react";
@@ -12,6 +13,7 @@ import { scale } from "react-native-size-matters";
 export default function MonthlyMood() {
   const { moods, deleteMood } = useMoodStore();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { mode } = useColorModeStore()
 
   const handleDeleteMood = async (id: string) => {
     deleteMood(id);
@@ -46,7 +48,7 @@ export default function MonthlyMood() {
   return (
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
-        <View className="gap-2 flex-col justify-between">
+        <View className="gap-2 flex-col justify-between pb-24">
           <Calendar 
             maxMoodsPerDay={3}
             onDatePress={handleDatePress}
@@ -55,13 +57,13 @@ export default function MonthlyMood() {
           />
           
           {selectedDate &&   
-            <View className="bg-white rounded-3xl p-5 mx-4 mb-4" style={{elevation: 2, shadowColor: 'gray'}}>
+            <View className="rounded-3xl p-5 mx-4 mb-4" style={{elevation: 2, shadowColor: 'gray', backgroundColor: mode.card}}>
               {/* Header with filter info */}
               <View className="flex-row items-center justify-between">
-                <Text className="font-funnel_semi" style={{fontSize: FONT.xs}}> Moods for {formatSelectedDate(selectedDate)} </Text>
-                <TouchableOpacity activeOpacity={0.7} onPress={clearFilter} className="flex-row items-center gap-1 bg-gray-100 px-3 py-1 rounded-full" >
-                  <Text className="font-nt_regular text-gray-600" style={{fontSize: FONT.xxs}}> Clear filter </Text>
-                  <RemixIcon name="close-line" size={scale(12)} color="#666"/>
+                <Text className="font-funnel_semi" style={{fontSize: FONT.xs, color: mode.textPrimary}}> Moods for {formatSelectedDate(selectedDate)} </Text>
+                <TouchableOpacity activeOpacity={0.7} onPress={clearFilter} className="flex-row items-center gap-1 px-3 py-1 rounded-full" style={{backgroundColor: mode.neutral}}>
+                  <Text className="font-nt_regular text-gray-600" style={{fontSize: FONT.xxs, color: mode.textSecondary}}> Clear filter </Text>
+                  <RemixIcon name="close-line" size={scale(12)} color={mode.textSecondary}/>
                 </TouchableOpacity>
               </View>
 

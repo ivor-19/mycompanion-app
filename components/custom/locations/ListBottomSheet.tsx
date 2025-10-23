@@ -1,5 +1,7 @@
 import { markers } from '@/helper/locationMarkers'
 import { FONT } from '@/lib/scale'
+import { useColorModeStore } from '@/stores/colorModeStore'
+import { useThemeStore } from '@/stores/themeStore'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
@@ -13,6 +15,8 @@ interface Props {
 }
 
 export default function ListBottomSheet({ onLocationPress }: Props) {
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
   const bottomSheetRef = useRef<BottomSheet>(null)
   const snapPoints = useMemo(() => ['5%', '50%', '75%', '100%'], [])
   const [searchText, setSearchText] = useState('')
@@ -69,14 +73,14 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
       ref={bottomSheetRef} 
       enableContentPanningGesture={false}
       index={0}
-      handleIndicatorStyle={{ backgroundColor: '#000' }}
-      backgroundStyle={{ backgroundColor: '#fff' }}
+      handleIndicatorStyle={{ backgroundColor: mode.foreground }}
+      backgroundStyle={{ backgroundColor: mode.card }}
       backdropComponent={renderBackdrop} // ✅ apply backdrop
     >
       <View className='flex-1 p-4'> 
         <View className="flex-row items-center gap-2 mb-4">
-          <RemixIcon name="list-check-2" size={scale(18)} color="#FF90BC"/>
-          <Text className="font-nt_semi flex-1" style={{fontSize: FONT.sm}}>
+          <RemixIcon name="list-check-2" size={scale(18)} color={theme.primary}/>
+          <Text className="font-nt_semi flex-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>
             Available Clinics ({filteredMarkers.length})
           </Text>
           <TouchableOpacity onPress={closeSheet}>
@@ -91,14 +95,14 @@ export default function ListBottomSheet({ onLocationPress }: Props) {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
         >
-          <View className="flex-row items-center bg-white w-full rounded-full border-2 border-gray-100 py px-4 mb-6 shadow-sm">
-            <RemixIcon name="search-2-line" size={scale(16)} color="#6b7280" />
+          <View className="flex-row items-center w-full rounded-full py px-4 mb-6 shadow-sm" style={{backgroundColor: mode.main, borderWidth: 1, borderColor: mode.neutral}}>
+            <RemixIcon name="search-2-line" size={scale(16)} color={mode.textSecondary} />
             <TextInput
               className="font-funnel_regular flex-1 text-black ml-3"
               placeholder="Search clinics, hospitals..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={mode.textSecondary}
               autoCapitalize="none"
-              style={{fontSize: FONT.xs}}
+              style={{fontSize: FONT.xs, color: mode.textSecondary}}
               value={searchText}
               onChangeText={handleSearchChange}
               onPressIn={handleSearchPress}

@@ -2,11 +2,11 @@
   "expo": {
     "name": "My Companion",
     "slug": "mycompanion",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/app-icons/icon.png",
     "scheme": "mycompanion",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -23,17 +23,18 @@
         }
       },
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.codenatin.mycompanion"
+      "package": "com.sehalee.mycompanion"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/app-icons/splash-icon.png"
     },
     "plugins": [
       "expo-router",
@@ -53,11 +54,22 @@
         }
       ],
       "expo-secure-store",
-        [
+      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you add them to your mood entries.",
           "cameraPermission": "The app accesses your camera to let you take photos for your mood entries."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "useLegacyPackaging": true
+          },
+          "ios": {}
         }
       ]
     ],
@@ -67,7 +79,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "73e11b81-a46d-4cf3-9bb2-0ecd1d8b23d6"
+        "projectId": "c4b47f16-5825-4b0d-92fc-774fc4042451"
       }
     }
   }

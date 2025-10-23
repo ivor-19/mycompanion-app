@@ -1,4 +1,6 @@
 import { FONT } from '@/lib/scale';
+import { useColorModeStore } from '@/stores/colorModeStore';
+import { useThemeStore } from '@/stores/themeStore';
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
@@ -17,6 +19,8 @@ interface WeeklyMoodGraphProps {
 }
 
 const WeeklyMoodGraph: React.FC<WeeklyMoodGraphProps> = ({ moodsData }) => {
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
   const screenWidth = Dimensions.get('window').width;
   
   // Calculate date range for the current week
@@ -151,14 +155,14 @@ const WeeklyMoodGraph: React.FC<WeeklyMoodGraphProps> = ({ moodsData }) => {
   const maxCount = Math.max(...chartData.map(d => d.totalCount), 1);
 
   return (
-    <View className='bg-white m-4 p-4 overflow-hidden border-2 border-gray-100 rounded-2xl gap-2'>
+    <View className=' m-4 p-4 overflow-hidden rounded-2xl gap-2 mb-28' style={{backgroundColor: mode.card}}>
       <View className=''>
-        <Text className='font-funnel_semi text-center' style={{fontSize: FONT.md}}>Weekly Mood Count</Text>
-        <Text className='font-funnel_semi text-center text-blue-800' style={{fontSize: FONT.xs}}>{dateRange}</Text>
-        <Text className='font-funnel_regular text-center mb-4' style={{fontSize: FONT.xs}}>Total mood entries per day</Text>
+        <Text className='font-funnel_semi text-center' style={{fontSize: FONT.md, color: mode.textPrimary}}>Weekly Mood Count</Text>
+        <Text className='font-funnel_semi text-center' style={{fontSize: FONT.xs, color: theme.primary}}>{dateRange}</Text>
+        <Text className='font-funnel_regular text-center mb-4' style={{fontSize: FONT.xs, color: mode.textSecondary}}>Total mood entries per day</Text>
       </View>
       
-      <View className='bg-[#f8f9fa] p-4 rounded-xl'>
+      <View className=' p-4 rounded-xl' style={{backgroundColor: mode.neutral}}>
         <BarChart
           data={chartData}
           width={screenWidth - 80}
@@ -170,46 +174,46 @@ const WeeklyMoodGraph: React.FC<WeeklyMoodGraphProps> = ({ moodsData }) => {
           hideRules={true}
           xAxisThickness={0}
           yAxisThickness={0}
-          yAxisTextStyle={{fontSize: FONT.xxs}}
-          xAxisLabelTextStyle={{fontSize: FONT.xxs}}
+          yAxisTextStyle={{fontSize: FONT.xxs, color: mode.textSecondary}}
+          xAxisLabelTextStyle={{fontSize: FONT.xxs, color: mode.textPrimary}}
           noOfSections={maxCount}
           maxValue={maxCount}
           isAnimated={false}
           showValuesAsTopLabel={true}
-          topLabelTextStyle={{fontSize: FONT.xxs, color: 'black'}}
+          topLabelTextStyle={{fontSize: FONT.xxs, color: mode.textSecondary}}
           backgroundColor={'transparent'}
         />
       </View>
       
       {/* Summary Stats */}
-      <View className='bg-[#f8f9fa] p-4 rounded-xl gap-2'>
-        <Text className='font-funnel_semi' style={{fontSize: FONT.xs}}>Week Summary:</Text>
+      <View className='p-4 rounded-xl gap-2' style={{backgroundColor: mode.neutral}}>
+        <Text className='font-funnel_semi' style={{fontSize: FONT.xs, color: mode.textPrimary}}>Week Summary:</Text>
         <View className='flex-row gap-2'>
           <View className='flex-1 flex-col gap-2 items-center'>
-            <Text className='font-funnel_semi text-[#FF6B9D]' style={{fontSize: FONT.xl}}>{chartData.reduce((sum, day) => sum + day.totalCount, 0)}</Text>
-            <Text className='font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Total entries</Text>
+            <Text className='font-funnel_semi' style={{fontSize: FONT.xl, color: theme.primary}}>{chartData.reduce((sum, day) => sum + day.totalCount, 0)}</Text>
+            <Text className='font-funnel_regular ' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Total entries</Text>
           </View>
           <View className='flex-1 flex-col gap-2 items-center'>
-            <Text className='font-funnel_semi text-[#6ED0D0]' style={{fontSize: FONT.xl}}>{chartData.reduce((max, day) => day.totalCount > max.totalCount ? day : max).label}</Text>
-            <Text className='font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Most active day</Text>
+            <Text className='font-funnel_semi' style={{fontSize: FONT.xl, color: theme.primary}}>{chartData.reduce((max, day) => day.totalCount > max.totalCount ? day : max).label}</Text>
+            <Text className='font-funnel_regular ' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Most active day</Text>
           </View>
         </View>
       </View>
       
       {/* Detailed breakdown */}
-      <View className='bg-[#f8f9fa] p-4 gap-2 rounded-2xl'>
-        <Text className='font-funnel_semi' style={{fontSize: FONT.xs}}>Daily Breakdown:</Text>
+      <View className=' p-4 gap-2 rounded-2xl' style={{backgroundColor: mode.neutral}}>
+        <Text className='font-funnel_semi' style={{fontSize: FONT.xs, color: mode.textPrimary}}>Daily Breakdown:</Text>
         {chartData.map((dayData, index) => (
           dayData.totalCount > 0 && (
             <View key={index} className='my-2'>
-              <Text className='font-funnel_semi' style={{fontSize: FONT.xs}}>{dayData.fullDayName}:</Text>
+              <Text className='font-funnel_semi' style={{fontSize: FONT.xs, color: mode.textPrimary}}>{dayData.fullDayName}:</Text>
               <View className='flex-row gap-2'>
                 {Object.entries(dayData.moodCounts)
                   .filter(([_, count]) => count > 0)
                   .map(([mood, count]) => (
                     <View key={mood} className='flex-row items-center gap-1'>
                       <View className='h-2 w-2 rounded-full' style={[, { backgroundColor: moodColors[mood as keyof typeof moodColors] }]} />
-                      <Text className='font-funnel_regular' style={{fontSize: FONT.xxs}}>{mood} ({count})</Text>
+                      <Text className='font-funnel_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>{mood} ({count})</Text>
                     </View>
                   ))}
               </View>
@@ -219,13 +223,13 @@ const WeeklyMoodGraph: React.FC<WeeklyMoodGraphProps> = ({ moodsData }) => {
       </View>
       
       {/* Mood Legend */}
-      <View className='bg-[#f8f9fa] p-4 rounded-2xl gap-2'>
-        <Text className='font-funnel_semi' style={{fontSize: FONT.xs}}>Mood Colors:</Text>
+      <View className='bg-[#f8f9fa] p-4 rounded-2xl gap-2' style={{backgroundColor: mode.neutral}}>
+        <Text className='font-funnel_semi' style={{fontSize: FONT.xs, color: mode.textPrimary}}>Mood Colors:</Text>
         <View className='flex-wrap flex-row justify-between'>
           {Object.entries(moodColors).map(([mood, color]) => (
             <View key={mood} className='flex-row gap-1 items-center w-[30%]'>
               <View className='h-2 w-2 rounded-full' style={[{ backgroundColor: color }]} />
-              <Text className='font-funnel_regular' style={{fontSize: FONT.xxs}}>{mood}</Text>
+              <Text className='font-funnel_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>{mood}</Text>
             </View>
           ))}
         </View>

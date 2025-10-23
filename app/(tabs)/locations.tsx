@@ -4,6 +4,8 @@ import ListBottomSheet from "@/components/custom/locations/ListBottomSheet";
 import { calculateDistance } from "@/helper/calculateDistance";
 import { markers } from "@/helper/locationMarkers";
 import { FONT } from "@/lib/scale";
+import { useColorModeStore } from "@/stores/colorModeStore";
+import { useThemeStore } from "@/stores/themeStore";
 import polyline from "@mapbox/polyline";
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
@@ -19,6 +21,97 @@ type LatLng = {
   longitude: number;
 };
 
+const darkMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+  {
+    featureType: "administrative.locality",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#d59563" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#d59563" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "geometry",
+    stylers: [{ color: "#263c3f" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#6b9a76" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#38414e" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#212a37" }],
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9ca5b3" }],
+  },
+  {
+    featureType: "transit",
+    elementType: "geometry",
+    stylers: [{ color: "#2f3948" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#17263c" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#515c6d" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#17263c" }],
+  },
+];
+
+const noPOIStyle = [
+  {
+    featureType: 'poi',
+    elementType: 'labels',
+    stylers: [{ visibility: 'off' }],
+  },
+  {
+    featureType: 'poi.business',
+    stylers: [{ visibility: 'off' }],
+  },
+  {
+    featureType: 'poi.medical',
+    stylers: [{ visibility: 'off' }],
+  },
+  {
+    featureType: 'poi.school',
+    stylers: [{ visibility: 'off' }],
+  },
+  {
+    featureType: 'poi.place_of_worship',
+    stylers: [{ visibility: 'off' }],
+  },
+  {
+    featureType: 'transit',
+    stylers: [{ visibility: 'off' }],
+  },
+];
+
+
+
 export default function Locations() {
   const [loading, setLoading] = useState(true);
   const [viewLocationOpen, setViewLocationOpen] = useState(false);
@@ -27,6 +120,8 @@ export default function Locations() {
   const [userLocation, setUserLocation] = useState<LatLng | null>(null);
   const [totalDistance, setTotalDistance] = useState<number>(0);
   const mapRef = useRef<MapView>(null);
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
 
   const isFocused = useIsFocused();
 
@@ -141,7 +236,7 @@ export default function Locations() {
     return (
       <PageLayout headerTitle="Clinic Locations">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#ff0066" />
+          <ActivityIndicator size="large" color={theme.primary}/>
           <Text className="mt-2 text-gray-600 font-funnel_semi" style={{ fontSize: FONT.sm }} > Loading map... </Text>
         </View>
         <ListBottomSheet onLocationPress={handleLocationPress} />
@@ -153,9 +248,9 @@ export default function Locations() {
     <PageLayout headerTitle="Clinic Locations">
       <View className="flex-1 w-full relative items-center">
         {totalDistance > 0 && (
-          <View className="flex-col items-center justify-between absolute top-2 bg-blue-50 w-[40%] rounded-full border border-blue-200 z-10 py-1 px-6 ">
-            <Text className="font-funnel_semi text-center text-blue-700" style={{ fontSize: FONT.xs }} > Distance </Text>
-            <Text className="font-funnel_semi text-center text-blue-700" style={{ fontSize: FONT.xs }} > {totalDistance.toFixed(2)} km </Text>
+          <View className="flex-col items-center justify-between absolute top-2 b w-[40%] rounded-full border border-gray-300 z-10 py-1 px-6" style={{backgroundColor: theme.card}}>
+            <Text className="font-funnel_semi text-center " style={{ fontSize: FONT.xs, color: theme.textPrimary }} > Distance </Text>
+            <Text className="font-funnel_semi text-center " style={{ fontSize: FONT.xs, color: theme.textPrimary }} > {totalDistance.toFixed(2)} km </Text>
           </View>
         )}
 
@@ -165,6 +260,7 @@ export default function Locations() {
               ref={mapRef}
               style={{ width: "100%", height: "100%" }}
               provider={PROVIDER_GOOGLE}
+              customMapStyle={mode.name === 'dark' ? [...darkMapStyle, ...noPOIStyle] : noPOIStyle}
               initialRegion={{
                 latitude: userLocation?.latitude || 14.5995,
                 longitude: userLocation?.longitude || 120.9842,
@@ -182,7 +278,7 @@ export default function Locations() {
                 <Polyline
                   coordinates={routeCoords}
                   strokeWidth={4}
-                  strokeColor="red"
+                  strokeColor='orange'
                   lineDashPattern={[10, 5]}
                   geodesic={true}
                 />

@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -36,19 +37,22 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'light' ? DefaultTheme : DefaultTheme}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }}/>
-          <Stack.Screen name="onboarding" options={{ headerShown: false }}/>
-          {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="support" options={{ headerShown: false }} />
-      
-        </Stack>
-       </GestureHandlerRootView>
-      <StatusBar style="auto" />
-      <PortalHost />
-    </ThemeProvider>
+    <SafeAreaProvider>
+       <StatusBar style="dark" />
+      <ThemeProvider value={colorScheme === 'light' ? DefaultTheme : DefaultTheme}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }}/>
+            <Stack.Screen name="onboarding" options={{ headerShown: false }}/>
+            {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="support" options={{ headerShown: false }} />
+        
+          </Stack>
+        </GestureHandlerRootView>
+       
+        <PortalHost />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

@@ -1,5 +1,7 @@
 import GBackground from "@/components/custom/GBackground";
 import PageLayout from "@/components/custom/layout/PageLayout";
+import { useColorModeStore } from "@/stores/colorModeStore";
+import { useThemeStore } from "@/stores/themeStore";
 import * as Linking from "expo-linking";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -81,26 +83,30 @@ const hotlines = [
 ]
 
 export default function Hotlines() {
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
+
   return(
      <PageLayout headerTitle="Mental Health Crisis Hotlines">
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
         <GBackground>
           <View className="min-h-screen items-center w-full mb-12 p-6 gap-4">
             {hotlines.map((hotline, index) => (
-              <View key={index} className="bg-white rounded-2xl p-6 gap-4 items-start w-full border border-gray-100 shadow">
+              <View key={index} className="rounded-2xl p-6 gap-4 items-start w-full shadow" style={{backgroundColor: mode.card, borderWidth: 1, borderColor: mode.neutral}}>
                 <View className="">
-                  <Text className="font-funnel_bold mb-1" style={{fontSize: scale(16)}}>{hotline.name}</Text> 
-                  <Text className="font-funnel_regular text-[#666]" style={{fontSize: scale(11)}}>{hotline.note}</Text>
+                  <Text className="font-funnel_bold mb-1" style={{fontSize: scale(16), color: mode.textPrimary}}>{hotline.name}</Text> 
+                  <Text className="font-funnel_regular" style={{fontSize: scale(11), color: mode.textSecondary}}>{hotline.note}</Text>
                   <View className="flex-row gap-2 items-center">
-                    <RemixIcon name="time-line" size={scale(14)} color="gray"/>
-                    <Text className="font-funnel_regular text-[#666]" style={{fontSize: scale(11)}}>{hotline.schedule}</Text>
+                    <RemixIcon name="time-line" size={scale(14)} color={mode.textSecondary}/>
+                    <Text className="font-funnel_regular" style={{fontSize: scale(11), color: mode.textSecondary}}>{hotline.schedule}</Text>
                   </View>
                 </View>
                 <View className="gap-2">
                   {hotline.numbers.map((num, index) => (
                     <TouchableOpacity 
                       key={index} 
-                      className="rounded-xl flex-row items-center gap-2 p-4 bg-[#4ECDC450] w-full" 
+                      className="rounded-xl flex-row items-center gap-2 p-4 w-full" 
+                      style={{backgroundColor: theme.primary + '20'}}
                       activeOpacity={0.7} 
                       onPress={() => {
                         if (num.provider.toLowerCase() !== "landline") {
@@ -108,9 +114,9 @@ export default function Hotlines() {
                         }
                       }}
                     >
-                      <RemixIcon name={num.provider === 'Landline' ? 'phone-fill' : 'smartphone-line'} size={scale(14)} color="#1F6E65"/>
-                      <Text className="font-funnel_semi flex-1 text-[#1F6E65]" style={{fontSize: scale(11)}}>{num.number}</Text>
-                      <Text className="font-funnel_semi text-[#1F6E65]" style={{fontSize: scale(11)}}>{num.provider}</Text>
+                      <RemixIcon name={num.provider === 'Landline' ? 'phone-fill' : 'smartphone-line'} size={scale(14)} color={theme.accent}/>
+                      <Text className="font-funnel_semi flex-1" style={{fontSize: scale(11), color: theme.accent}}>{num.number}</Text>
+                      <Text className="font-funnel_semi ]" style={{fontSize: scale(11), color: theme.accent}}>{num.provider}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>

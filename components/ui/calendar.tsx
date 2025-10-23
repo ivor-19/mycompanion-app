@@ -1,6 +1,8 @@
 import { getEmojiByMood } from '@/helper/moodEmoji';
 import { FONT } from '@/lib/scale';
+import { useColorModeStore } from '@/stores/colorModeStore';
 import { useMoodStore } from '@/stores/moodStore';
+import { useThemeStore } from '@/stores/themeStore';
 import { Image } from 'expo-image';
 import React, { ReactElement, useState } from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -32,6 +34,8 @@ const Calendar: React.FC<CalendarProps> = ({
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date(initialDate));
   const { moods } = useMoodStore();
+  const { mode } = useColorModeStore()
+  const { theme } = useThemeStore()
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -146,18 +150,44 @@ const Calendar: React.FC<CalendarProps> = ({
                 const remainingMoods = totalMoodsForDate - maxMoodsPerDay;
                 
                 return remainingMoods > 0 && (
-                  <Text className='flex-row text-center font-funnel_regular mt-1 text-[#666]' style={{fontSize: FONT.xxs}}>+ {remainingMoods} more</Text>
+                  <Text className='flex-row text-center font-funnel_regular mt-1 ' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>+ {remainingMoods} more</Text>
                 );
               })()}
             </View>
           )}
           
-          <Text   className={`font-nt_regular
-            ${isToday && isSelected ? 'bg-[#FFF3E0] rounded-full py-2 px-4 font-nt_semi text-orange-600'
-            : isToday ? 'bg-[#E3F2FD] rounded-full py-2 px-4 font-nt_semi text-blue-600'
-            : isSelected ? 'bg-[#FFF3E0] rounded-full py-2 px-4 font-nt_semi text-orange-600'
-            : ''}`}
-          >
+          <Text
+              style={[
+                {
+                  fontFamily: "nt_regular",
+                  color: mode.textSecondary
+                },
+                (isToday && isSelected) && {
+                  backgroundColor: theme.primary + '20',
+                  borderRadius: 9999,
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  fontFamily: "nt_semi",
+                  color: theme.textPrimary,
+                },
+                (isToday && !isSelected) && {
+                  backgroundColor: theme.primary + '20',
+                  borderRadius: 9999,
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  fontFamily: "nt_semi",
+                  color: theme.primary,
+                },
+                (!isToday && isSelected) && {
+                  backgroundColor: mode.neutral,
+                  borderRadius: 9999,
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  fontFamily: "nt_semi",
+                  color: theme.textPrimary,
+                },
+              ]}
+            >
             {day}
           </Text>
         </TouchableOpacity>
@@ -168,22 +198,22 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={{backgroundColor: mode.card, padding: scale(14), borderRadius: 8, margin: 10, elevation: 5, }}>
       {/* Header with month/year and navigation */}
       <View className='flex-row justify-between items-center mb-6'>
         {showNavigationButtons && (
           <TouchableOpacity onPress={() => navigateMonth(-1)}>
-            <RemixIcon name='arrow-left-s-line' size={scale(24)}/>
+            <RemixIcon name='arrow-left-s-line' size={scale(24)} color={mode.textPrimary}/>
           </TouchableOpacity>
         )}
         
-        <Text className='font-funnel_semi' style={{fontSize: FONT.md}}>
+        <Text className='font-funnel_semi' style={{fontSize: FONT.md, color: mode.textPrimary}}>
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </Text>
         
         {showNavigationButtons && (
           <TouchableOpacity onPress={() => navigateMonth(1)}>
-            <RemixIcon name='arrow-right-s-line' size={scale(24)}/>
+            <RemixIcon name='arrow-right-s-line' size={scale(24)} color={mode.textPrimary}/>
           </TouchableOpacity>
         )}
       </View>
@@ -192,7 +222,7 @@ const Calendar: React.FC<CalendarProps> = ({
       <View className='flex-row'>
         {dayNames.map((day: string) => (
           <View key={day} className='flex-1 items-center'>
-            <Text className='font-funnel_regular' style={{fontSize: FONT.xs}}>{day}</Text>
+            <Text className='font-funnel_regular' style={{fontSize: FONT.xs, color: mode.textSecondary}}>{day}</Text>
           </View>
         ))}
       </View>
@@ -201,7 +231,7 @@ const Calendar: React.FC<CalendarProps> = ({
       <View className='flex-wrap flex-row'>
         {renderCalendarDays()}
       </View>
-      <Text className='text-center font-funnel_regular text-gray-600' style={{fontSize: FONT.xxs}}>Select a date to see mood entries</Text>
+      <Text className='text-center font-funnel_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Select a date to see mood entries</Text>
     </View>
   );
 };

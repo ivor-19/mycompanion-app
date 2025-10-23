@@ -1,4 +1,6 @@
 import { FONT } from '@/lib/scale'
+import { useColorModeStore } from '@/stores/colorModeStore'
+import { useThemeStore } from '@/stores/themeStore'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import * as Linking from "expo-linking"
 import { useCallback, useEffect, useMemo, useRef } from 'react'
@@ -24,6 +26,8 @@ interface Props {
 }
 
 export default function InfoBottomSheet({ details, open, onClose, onLocationPress }: Props) {
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
   const bottomSheetRef = useRef<BottomSheet>(null)
   const snapPoints = useMemo(() => ['50%', '75%', '100%'], [])
 
@@ -59,13 +63,15 @@ export default function InfoBottomSheet({ details, open, onClose, onLocationPres
       enableContentPanningGesture={false}
       enablePanDownToClose={false}
       index={-1}
+      handleIndicatorStyle={{ backgroundColor: mode.foreground }}
+      backgroundStyle={{ backgroundColor: mode.card }}
       onClose={onClose}
       backdropComponent={renderBackdrop} // ✅ apply backdrop
     >
       <View className='flex-1 p-4'> 
         <View className="flex-row items-center gap-2">
-          <RemixIcon name="list-check-2" size={scale(18)} color="#FF90BC"/>
-          <Text className="font-nt_semi flex-1" style={{fontSize: FONT.sm}}> Location Info </Text>
+          <RemixIcon name="list-check-2" size={scale(18)} color={theme.primary}/>
+          <Text className="font-nt_semi flex-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}> Location Info </Text>
           <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
             <RemixIcon name="close-line" size={scale(18)} color="#6b7280"/>
           </TouchableOpacity>
@@ -82,25 +88,25 @@ export default function InfoBottomSheet({ details, open, onClose, onLocationPres
           {/* Header */}
           <View className="flex-row items-center gap-3">
             <View className="flex-1">
-              <Text className="font-funnel_semi" style={{fontSize: FONT.sm}}>{details?.title}</Text>
-              <Text className="font-funnel_regular text-gray-600" style={{fontSize: FONT.xs}}>{details?.address}</Text>
+              <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: mode.textPrimary}}>{details?.title}</Text>
+              <Text className="font-funnel_regular" style={{fontSize: FONT.xs, color: mode.textSecondary}}>{details?.address}</Text>
             </View>
           </View>
 
           {/* Info List */}
-          <View className="bg-white rounded-xl border border-gray-200">
+          <View className="rounded-xl" >
             {details?.hours && (
-              <View className="flex-row items-center gap-2 p-3 border-b border-gray-100">
+              <View className="flex-row items-center gap-2 p-3" style={{borderWidth: 1, borderColor: mode.neutral}}>
                 <RemixIcon name="time-line" size={scale(16)} color="gray"/>
-                <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs}}>
+                <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs, color: mode.textSecondary}}>
                   {details?.hours}
                 </Text>
               </View>
             )}
             {details?.contact && (
-              <View className="flex-row items-center gap-2 p-3">
+              <View className="flex-row items-center gap-2 p-3" style={{borderWidth: 1, borderColor: mode.neutral}}>
                 <RemixIcon name="phone-line" size={scale(16)} color="gray"/>
-                <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs}}>
+                <Text className="font-funnel_regular text-gray-700 flex-1" style={{fontSize: FONT.xs, color: mode.textSecondary}}>
                   {details?.contact}
                 </Text>
               </View>
@@ -109,13 +115,13 @@ export default function InfoBottomSheet({ details, open, onClose, onLocationPres
 
           {/* Actions */}
           <View className="flex-row gap-2">
-            <TouchableOpacity onPress={handleLocatePress} className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg border border-gray-200 bg-white" activeOpacity={0.8} >
-              <RemixIcon name="focus-3-fill" size={scale(16)} color="gray"/>
-              <Text className="font-funnel_semi text-gray-600" style={{fontSize: FONT.xs}}>Locate</Text>
+            <TouchableOpacity onPress={handleLocatePress} className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg" activeOpacity={0.8} style={{backgroundColor: mode.main, borderWidth: 1, borderColor: mode.neutral}}>
+              <RemixIcon name="focus-3-fill" size={scale(16)} color={mode.textSecondary}/>
+              <Text className="font-funnel_semi text-gray-600" style={{fontSize: FONT.xs, color: mode.textSecondary}}>Locate</Text>
             </TouchableOpacity>
 
             {details?.contact && (
-              <TouchableOpacity onPress={() => Linking.openURL(`tel:${details?.contact}`)} className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg bg-[#FF90BC]" activeOpacity={0.8} >
+              <TouchableOpacity onPress={() => Linking.openURL(`tel:${details?.contact}`)} className="flex-1 flex-row items-center justify-center gap-1 p-3 rounded-lg" style={{backgroundColor: theme.primary}} activeOpacity={0.8} >
                 <RemixIcon name="phone-fill" size={scale(16)} color="white"/>
                 <Text className="font-funnel_semi text-white" style={{fontSize: FONT.xs}}>Call</Text>
               </TouchableOpacity>

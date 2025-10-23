@@ -4,7 +4,9 @@ import MoodEntryModal from "@/components/custom/mood/MoodEntryModal";
 import Separator from "@/components/custom/Separator";
 import { getEmojiByMood } from "@/helper/moodEmoji";
 import { FONT } from "@/lib/scale";
+import { useColorModeStore } from "@/stores/colorModeStore";
 import { useMoodStore } from "@/stores/moodStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { useTimeStore } from "@/stores/timeStore";
 import { useIsFocused } from "@react-navigation/native";
 import { Image } from "expo-image";
@@ -24,6 +26,8 @@ const emotions = [
 
 export default function DailyMood() {
   const [open, setOpen] = useState(false)
+  const { theme } = useThemeStore()
+  const { mode } = useColorModeStore()
   const [selectedEmotion, setSelectedEmotion] = useState<string>('');
 
   const { currentTime, currentDay, currentDate } = useTimeStore();
@@ -47,11 +51,11 @@ export default function DailyMood() {
   return (
     <GBackground>
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
-        <View className="flex-1 gap-4">       
-          <View className="items-center px-4 py-6 rounded-3xl bg-[#FFFCFF] m-4" style={{elevation: 2, shadowColor: 'gray'}}>
-            <Text className="font-funnel_semi text-gray-800 mb-2" style={{fontSize: FONT.sm}}> How are you feeling today?</Text>
-            <View className="bg-orange-50 rounded-full px-6 py-3 mb-4">
-              <Text className="font-funnel_semi text-orange-800" style={{fontSize: FONT.xs}}> {currentDay}, {currentDate}, {currentTime} </Text>
+        <View className="flex-1 gap-4 pb-24">       
+          <View className="items-center px-4 py-6 rounded-3xl m-4" style={{elevation: 2, shadowColor: 'gray', backgroundColor: mode.card}}>
+            <Text className="font-funnel_semi  mb-2" style={{fontSize: FONT.sm, color: mode.textPrimary}}> How are you feeling today?</Text>
+            <View className="rounded-full px-6 py-3 mb-4" style={{backgroundColor: theme.primary + '20'}}>
+              <Text className="font-funnel_semi" style={{fontSize: FONT.xs, color: theme.accent}}> {currentDay}, {currentDate}, {currentTime} </Text>
             </View>      
             <View className="flex-row flex-wrap w-full gap-2 justify-center">
               {emotions.map((emotion, index) => (
@@ -60,8 +64,7 @@ export default function DailyMood() {
                   colors={emotion.colors}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className="border border-gray-200"
-                  style={{borderRadius: 20, overflow: 'hidden', height: scale(100), width: scale(80)}}
+                  style={{borderRadius: 20, borderWidth: 1, borderColor: mode.neutral, overflow: 'hidden', height: scale(100), width: scale(80)}}
                 >                                                     
                   <TouchableOpacity className="w-full h-full items-center justify-center gap-3" activeOpacity={0.7} onPress={() => handlePress(emotion)}>
                     <Image source={getEmojiByMood(emotion.moodText)} contentFit="contain" style={{width: scale(32), height: scale(32)}} />
@@ -70,10 +73,10 @@ export default function DailyMood() {
                 </LinearGradient>
               ))}
             </View>
-            <Text className="font-funnel_regular mt-2 text-gray-600" style={{fontSize: FONT.xxs}}>Choose your current mood</Text>
+            <Text className="font-funnel_regular mt-2 " style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Choose your current mood</Text>
           </View>   
-          <View className="bg-white rounded-3xl p-5 mx-4 mb-4" style={{elevation: 2, shadowColor: 'gray'}}>
-            <Text className="font-funnel_semi" style={{fontSize: FONT.md}}>Recent Entries</Text>
+          <View className="rounded-3xl p-5 mx-4 mb-4" style={{elevation: 2, shadowColor: 'gray', backgroundColor: mode.card}}>
+            <Text className="font-funnel_semi" style={{fontSize: FONT.md, color: mode.textPrimary}}>Recent Entries</Text>
             <Separator />
             <ScrollView className="gap-2" style={{maxHeight: 500}} nestedScrollEnabled>
               {moods.length === 0 ? (
