@@ -71,6 +71,15 @@
           },
           "ios": {}
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/bot/notif-icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
       ]
     ],
     "experiments": {

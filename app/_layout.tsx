@@ -1,4 +1,3 @@
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
@@ -38,8 +37,8 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-       <StatusBar style="dark" />
-      <ThemeProvider value={colorScheme === 'light' ? DefaultTheme : DefaultTheme}>
+      <StatusBar style="auto" />
+
         <GestureHandlerRootView style={{ flex: 1 }}>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }}/>
@@ -50,9 +49,9 @@ export default function RootLayout() {
         
           </Stack>
         </GestureHandlerRootView>
-       
+    
         <PortalHost />
-      </ThemeProvider>
+  
     </SafeAreaProvider>
   );
 }
