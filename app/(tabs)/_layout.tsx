@@ -93,6 +93,19 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+       <Tabs.Screen
+        name="notif"
+        options={{
+          title: 'Notif',
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ borderRadius: 50, padding: focused ? 10 : 0, }} >
+              <RemixIcon name={'usb-fill'} color={color} size={focused ? scale(28) : scale(22)} />
+            </View>
+          ),
+        }}
+      />
   
     </Tabs>
 

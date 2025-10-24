@@ -1,12 +1,15 @@
 import GBackground from "@/components/custom/GBackground";
+import ReminderEntryModal from "@/components/custom/modal/ReminderEntryModal";
 import { getRandomAffirmation } from "@/helper/affirmation";
 import { FONT } from "@/lib/scale";
 import { useColorModeStore } from "@/stores/colorModeStore";
 import { useMoodStore } from "@/stores/moodStore";
+import { useReminderStore } from "@/stores/reminderStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 import { scale } from "react-native-size-matters";
@@ -97,6 +100,8 @@ export default function Home() {
   const affirmation = getRandomAffirmation()
   const { theme } = useThemeStore()
   const { mode } = useColorModeStore()
+  const { reminders } = useReminderStore()
+  const [reminderOpen, setReminderOpen] = useState(false)
 
   // Calculate stats from mood data
   const { sessions, wellnessScore, weeklyProgress } = calculateMoodStats(moods);
@@ -117,6 +122,13 @@ export default function Home() {
     { title: "Sleep Stories", subtitle: "Better rest", color: "#F0F8E8" },
     { title: "Daily Tips", subtitle: "Mental wellness", color: "#F8E8FF" },
   ];
+
+  const formatDays = (days: string[]) => {
+    if(days.length === 7) return 'Everyday';
+    if(days.length === 5 && !days.includes('Sat') && !days.includes('Sun')) return 'Weekdays';
+    if(days.length === 2 && days.includes('Sat') && days.includes('Sun')) return 'Weekends';
+    return(days.join(', '))
+  }
 
   return (
     <View className="min-h-screen"> 
@@ -209,6 +221,43 @@ export default function Home() {
               </View>
             </View>
 
+            <View className="w-[95%] px-2">
+              <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.md, color: mode.textPrimary}}>Reminder Settings</Text>
+              
+              {/* Reminder Items */}
+              <View className="rounded-3xl mb-3 overflow-hidden" style={{backgroundColor: mode.card, elevation: 2, shadowColor: 'gray'}}>
+                {reminders.length !== 0 ? (
+                  <>
+                    {reminders.map((reminder, index) => (                  
+                      <TouchableOpacity key={index} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                        <View className="flex-row items-center gap-3 flex-1">
+                          <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
+                          <View className="flex-1">
+                            <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>{reminder.name}</Text>
+                            <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>{reminder.hour}:{reminder.minute} • {formatDays(reminder.days)}</Text>
+                          </View>
+                        </View>
+                        <RemixIcon name="close-line" size={scale(20)} color={mode.textSecondary}/>
+                      </TouchableOpacity>
+                    ))}      
+                  </>
+                ):(
+                  <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                    <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
+                      <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>There are currently no reminders to show. </Text>
+                    </View>
+                  </View>
+                )}
+                                   
+              </View>
+
+              {/* Set Reminder Button */}
+              <TouchableOpacity className="rounded-3xl p-4 flex-row items-center justify-center gap-2" onPress={() => setReminderOpen(true)} activeOpacity={0.7} style={{backgroundColor: theme.primary + '90'}} >
+                <RemixIcon name="add-line" size={scale(20)} color={'white'}/>
+                <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: 'white'}}>Set Reminder</Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Progress Overview - Enhanced */}
             <View className="w-[95%] px-2">
               <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.md, color: mode.textPrimary}}>Your Progress</Text>
@@ -257,12 +306,9 @@ export default function Home() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
-            
+            </View>        
           </View>
-          
-        
-        
+          <ReminderEntryModal open={reminderOpen} setOpen={setReminderOpen}/>
         </GBackground>
       </ScrollView>
 
