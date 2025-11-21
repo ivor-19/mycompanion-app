@@ -45,7 +45,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar style="auto" />
-
+    
         <GestureHandlerRootView style={{ flex: 1 }}>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }}/>

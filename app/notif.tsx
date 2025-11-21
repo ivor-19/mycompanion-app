@@ -140,6 +140,25 @@ export default function Notif() {
     );
   }
 
+  async function scheduleDailyNotification8(): Promise<void> {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Good Morning 8! 🌅",
+        body: 'Time to check in with your companion',
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour: 8,
+        minute: 0,
+      },
+    });
+
+    Alert.alert(
+      'Daily Notification Set',
+      'You will receive a notification every day at 8:00 AM'
+    );
+  }
+
   // Cancel all scheduled notifications
   async function cancelAllNotifications(): Promise<void> {
     await Notifications.cancelAllScheduledNotificationsAsync();
@@ -223,6 +242,14 @@ export default function Notif() {
         <Button
           title="Schedule Daily (9:00 AM)"
           onPress={scheduleDailyNotification}
+          color="#4CAF50"
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Schedule Daily (8:00 AM)"
+          onPress={scheduleDailyNotification8}
           color="#4CAF50"
         />
       </View>

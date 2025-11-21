@@ -29,8 +29,10 @@
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.VIBRATE",
         "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS",
-        "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+        "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+        "android.permission.WAKE_LOCK"
       ],
       "package": "com.sehalee.mycompanion"
     },
@@ -80,8 +82,8 @@
         {
           "icon": "./assets/images/bot/notif-icon.png",
           "color": "#ffffff",
-          "defaultChannel": "reminder-channel",
-          "enableBackgroundRemoteNotifications": true
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
         }
       ]
     ],
