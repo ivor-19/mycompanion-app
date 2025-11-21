@@ -10,7 +10,7 @@ export type Reminder = {
   hour: string;
   minute: string;
   period: 'AM' | 'PM';
-  days: string[];
+  days: string[]; // ["Mon", "Tue", ...]
   soundEnabled: boolean;
   isEnabled: boolean;
   createdAt: string;
@@ -27,16 +27,16 @@ interface ReminderStore {
     days: string[],
     soundEnabled: boolean
   ) => Promise<void>;
-  deleteReminder: (id: string) => void; // Changed to sync
+  deleteReminder: (id: string) => void;
   toggleReminder: (id: string) => Promise<void>;
-  clearReminders: () => void; // Changed to sync
+  clearReminders: () => void;
   initializeNotifications: () => Promise<void>;
-  _addReminderToState: (reminder: Reminder) => void; // Internal sync method
-  _updateReminderInState: (id: string, updates: Partial<Reminder>) => void; // Internal sync method
-  _removeReminderFromState: (id: string) => void; // Internal sync method
+  _addReminderToState: (reminder: Reminder) => void;
+  _updateReminderInState: (id: string, updates: Partial<Reminder>) => void;
+  _removeReminderFromState: (id: string) => void;
 }
 
-// Configure notification handler
+// Notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -47,7 +47,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Initialize notification permissions
+// Permissions
 const initializeNotificationPermissions = async (): Promise<boolean> => {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
@@ -61,17 +61,14 @@ const initializeNotificationPermissions = async (): Promise<boolean> => {
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
-  
+
   if (existingStatus !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }
-  
+
   if (finalStatus !== 'granted') {
-    Alert.alert(
-      'Permission Required',
-      'Please enable notifications to receive reminders.'
-    );
+    Alert.alert('Permission Required', 'Please enable notifications to receive reminders.');
     return false;
   }
 
@@ -79,40 +76,29 @@ const initializeNotificationPermissions = async (): Promise<boolean> => {
   return true;
 };
 
-// Convert 12-hour to 24-hour format
+// Convert 12h → 24h
 const convertTo24Hour = (hour: string, period: 'AM' | 'PM'): number => {
   let hour24 = parseInt(hour, 10);
-  
-  if (period === 'PM' && hour24 !== 12) {
-    hour24 += 12;
-  } else if (period === 'AM' && hour24 === 12) {
-    hour24 = 0;
-  }
-  
+  if (period === 'PM' && hour24 !== 12) hour24 += 12;
+  if (period === 'AM' && hour24 === 12) hour24 = 0;
   return hour24;
 };
 
-// Map day names to weekday numbers (1 = Sunday, 2 = Monday, etc.)
+// Maps day name → index 1-7 (1 = Sunday, 7 = Saturday)
 const getDayNumber = (day: string): number => {
-  const days: { [key: string]: number } = {
-    'Sun': 1,
-    'Sunday': 1,
-    'Mon': 2,
-    'Monday': 2,
-    'Tue': 3,
-    'Tuesday': 3,
-    'Wed': 4,
-    'Wednesday': 4,
-    'Thu': 5,
-    'Thursday': 5,
-    'Fri': 6,
-    'Friday': 6,
-    'Sat': 7,
-    'Saturday': 7,
+  const map: Record<string, number> = {
+    Sun: 1, Sunday: 1,
+    Mon: 2, Monday: 2,
+    Tue: 3, Tuesday: 3,
+    Wed: 4, Wednesday: 4,
+    Thu: 5, Thursday: 5,
+    Fri: 6, Friday: 6,
+    Sat: 7, Saturday: 7,
   };
-  return days[day] || 1;
+  return map[day] ?? 1;
 };
 
+// Titles
 const reminderTitles = [
   "Hey! You have a reminder 😊",
   "Hey there! Don't forget this ⏰",
@@ -123,6 +109,7 @@ const reminderTitles = [
   "Friendly ping! Check this out 💬",
 ];
 
+// Main store
 const useReminderStore = create<ReminderStore>()(
   persist(
     (set, get) => ({
@@ -132,30 +119,24 @@ const useReminderStore = create<ReminderStore>()(
         await initializeNotificationPermissions();
       },
 
-      // Internal sync methods that directly update state
-      _addReminderToState: (reminder: Reminder) => {
-        console.log('💾 Adding reminder to state (sync):', reminder.name);
+      _addReminderToState: (reminder) => {
+        console.log('💾 Adding reminder to state:', reminder.name);
+        set((state) => ({ reminders: [...state.reminders, reminder] }));
+      },
+
+      _updateReminderInState: (id, updates) => {
+        console.log('💾 Updating reminder in state:', id);
         set((state) => ({
-          reminders: [...state.reminders, reminder],
+          reminders: state.reminders.map((r) => (r.id === id ? { ...r, ...updates } : r)),
         }));
       },
 
-      _updateReminderInState: (id: string, updates: Partial<Reminder>) => {
-        console.log('💾 Updating reminder in state (sync):', id);
-        set((state) => ({
-          reminders: state.reminders.map((r) =>
-            r.id === id ? { ...r, ...updates } : r
-          ),
-        }));
+      _removeReminderFromState: (id) => {
+        console.log('💾 Removing reminder from state:', id);
+        set((state) => ({ reminders: state.reminders.filter((r) => r.id !== id) }));
       },
 
-      _removeReminderFromState: (id: string) => {
-        console.log('💾 Removing reminder from state (sync):', id);
-        set((state) => ({
-          reminders: state.reminders.filter((reminder) => reminder.id !== id),
-        }));
-      },
-
+      // ADD REMINDER - Using DAILY trigger (production-reliable)
       addReminder: async (name, hour, minute, period, days, soundEnabled) => {
         console.log('🔵 addReminder called');
         
@@ -165,7 +146,6 @@ const useReminderStore = create<ReminderStore>()(
           return;
         }
 
-        // Create reminder object first
         const newReminder: Reminder = {
           id: Date.now().toString(),
           name,
@@ -180,59 +160,60 @@ const useReminderStore = create<ReminderStore>()(
 
         console.log('📝 Created reminder object:', newReminder.id);
 
-        // Add to state IMMEDIATELY (before async operations)
+        // Add to state immediately
         get()._addReminderToState(newReminder);
         console.log('✅ Reminder added to state');
 
-        // Then schedule notifications asynchronously
-        const notificationIds: string[] = [];
+        // Schedule notification using DAILY trigger
         const hour24 = convertTo24Hour(hour, period);
         const min = parseInt(minute, 10);
+        const selectedDays = days.map(getDayNumber);
         const randomTitle = reminderTitles[Math.floor(Math.random() * reminderTitles.length)];
 
-        console.log(`📅 Scheduling notifications for: ${name}`);
+        console.log(`📅 Scheduling notification for: ${name} at ${hour24}:${min}`);
 
         try {
-          for (const day of days) {
-            const weekday = getDayNumber(day);
-            const notificationId = await Notifications.scheduleNotificationAsync({
-              content: {
-                title: randomTitle,
-                body: `Reminder: ${name}`,
-                data: { reminderId: newReminder.id, day },
+          // Use DAILY trigger - will fire every day at the specified time
+          const notificationId = await Notifications.scheduleNotificationAsync({
+            content: {
+              title: randomTitle,
+              body: `Reminder: ${name}`,
+              data: { 
+                reminderId: newReminder.id, 
+                selectedDays: selectedDays // Store which days should actually trigger
               },
-              trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-                weekday: weekday,
-                hour: hour24,
-                minute: min,
-              },
-            });
+              sound: soundEnabled ? 'default' : undefined,
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
+              hour: hour24,
+              minute: min,
+            },
+          });
 
-            console.log(`✅ Scheduled for ${day} - ID: ${notificationId}`);
-            notificationIds.push(notificationId);
-          }
-
-          // Update with notification IDs
-          get()._updateReminderInState(newReminder.id, { notificationIds });
-          console.log('✅ Notification IDs updated');
+          console.log(`✅ Scheduled DAILY notification - ID: ${notificationId}`);
+          
+          // Update with notification ID
+          get()._updateReminderInState(newReminder.id, { notificationIds: [notificationId] });
+          console.log('✅ Notification ID updated');
         } catch (error) {
-          console.error('❌ Error scheduling notifications:', error);
+          console.error('❌ Error scheduling notification:', error);
         }
       },
 
-      deleteReminder: (id: string) => {
+      deleteReminder: (id) => {
         console.log('🗑️ Deleting reminder:', id);
         const reminder = get().reminders.find((r) => r.id === id);
         
-        // Remove from state first (sync)
+        // Remove from state first
         get()._removeReminderFromState(id);
         
-        // Cancel notifications asynchronously (don't await)
+        // Cancel notifications
         if (reminder?.notificationIds) {
           reminder.notificationIds.forEach(async (notifId) => {
             try {
               await Notifications.cancelScheduledNotificationAsync(notifId);
+              console.log('✅ Cancelled notification:', notifId);
             } catch (error) {
               console.error('Error canceling notification:', error);
             }
@@ -240,15 +221,15 @@ const useReminderStore = create<ReminderStore>()(
         }
       },
 
-      toggleReminder: async (id: string) => {
+      toggleReminder: async (id) => {
         const reminder = get().reminders.find((r) => r.id === id);
         if (!reminder) return;
 
         if (reminder.isEnabled) {
-          // Disable: update state first
+          // DISABLE
+          console.log('⏸️ Disabling reminder:', id);
           get()._updateReminderInState(id, { isEnabled: false, notificationIds: [] });
           
-          // Cancel notifications asynchronously
           if (reminder.notificationIds) {
             reminder.notificationIds.forEach(async (notifId) => {
               try {
@@ -259,46 +240,45 @@ const useReminderStore = create<ReminderStore>()(
             });
           }
         } else {
-          // Enable: schedule first, then update state
-          const notificationIds: string[] = [];
+          // ENABLE
+          console.log('▶️ Enabling reminder:', id);
           const hour24 = convertTo24Hour(reminder.hour, reminder.period);
           const min = parseInt(reminder.minute, 10);
+          const selectedDays = reminder.days.map(getDayNumber);
           const randomTitle = reminderTitles[Math.floor(Math.random() * reminderTitles.length)];
 
           try {
-            for (const day of reminder.days) {
-              const weekday = getDayNumber(day);
-              const notificationId = await Notifications.scheduleNotificationAsync({
-                content: {
-                  title: randomTitle,
-                  body: `Reminder: ${reminder.name}`,
-                  data: { reminderId: reminder.id, day },
+            const notificationId = await Notifications.scheduleNotificationAsync({
+              content: {
+                title: randomTitle,
+                body: `Reminder: ${reminder.name}`,
+                data: { 
+                  reminderId: reminder.id, 
+                  selectedDays: selectedDays 
                 },
-                trigger: {
-                  type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-                  weekday: weekday,
-                  hour: hour24,
-                  minute: min,
-                },
-              });
-              notificationIds.push(notificationId);
-            }
+                sound: reminder.soundEnabled ? 'default' : undefined,
+              },
+              trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: hour24,
+                minute: min,
+              },
+            });
             
-            // Update state after successful scheduling
-            get()._updateReminderInState(id, { isEnabled: true, notificationIds });
+            get()._updateReminderInState(id, { isEnabled: true, notificationIds: [notificationId] });
+            console.log('✅ Reminder re-enabled');
           } catch (error) {
-            console.error('Error scheduling notifications:', error);
+            console.error('Error re-enabling notification:', error);
           }
         }
       },
 
       clearReminders: () => {
+        console.log('🧹 Clearing all reminders');
         const reminders = get().reminders;
         
-        // Clear state first (sync)
         set({ reminders: [] });
         
-        // Cancel notifications asynchronously
         reminders.forEach((reminder) => {
           if (reminder.notificationIds) {
             reminder.notificationIds.forEach(async (notifId) => {
@@ -318,11 +298,8 @@ const useReminderStore = create<ReminderStore>()(
       onRehydrateStorage: () => {
         console.log('🌊 Hydration starting...');
         return (state, error) => {
-          if (error) {
-            console.error('❌ Hydration failed:', error);
-          } else {
-            console.log('✅ Hydration complete.');
-          }
+          if (error) console.error('❌ Hydration failed:', error);
+          else console.log('✅ Hydration complete.');
         };
       },
     }
@@ -330,4 +307,3 @@ const useReminderStore = create<ReminderStore>()(
 );
 
 export { useReminderStore };
-
