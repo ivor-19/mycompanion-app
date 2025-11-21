@@ -81,7 +81,7 @@
         {
           "icon": "./assets/images/bot/notif-icon.png",
           "color": "#ffffff",
-          "defaultChannel": "default",
+          "defaultChannel": "reminder-channel",
           "enableBackgroundRemoteNotifications": false
         }
       ]

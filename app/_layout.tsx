@@ -32,10 +32,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (error) throw error;
-    if (fontsLoaded) 
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
-      initializeNotifications(); 
+      initializeNotifications();
+    }
   }, [fontsLoaded, error]);
+
+  
 
   if (!fontsLoaded) return null;
 
@@ -50,6 +53,7 @@ export default function RootLayout() {
             {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="support" options={{ headerShown: false }} />
+             <Stack.Screen name="notif" options={{ headerShown: false }} />
         
           </Stack>
         </GestureHandlerRootView>

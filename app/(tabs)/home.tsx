@@ -252,7 +252,7 @@ export default function Home() {
                 )}
                                    
               </View>
-
+             
               {/* Set Reminder Button */}
               {reminders.length === 5 ? (
                 <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>

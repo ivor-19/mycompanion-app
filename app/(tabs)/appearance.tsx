@@ -3,6 +3,7 @@ import PageLayout from '@/components/custom/layout/PageLayout'
 import { FONT } from '@/lib/scale'
 import { useColorModeStore } from '@/stores/colorModeStore'
 import { useThemeStore } from '@/stores/themeStore'
+import { router } from 'expo-router'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { scale } from 'react-native-size-matters'
@@ -46,7 +47,7 @@ export default function Appearance() {
                 })}               
               </View>
             </View>
-            <View className="rounded-3xl p-5" style={{elevation: 2, shadowColor: 'gray', backgroundColor: mode.card, borderColor: mode.neutral, borderWidth: 1}}>
+            <View className="rounded-3xl p-5 relative" style={{elevation: 2, shadowColor: 'gray', backgroundColor: mode.card, borderColor: mode.neutral, borderWidth: 1}}>
               <View className='flex-row items-center justify-between'>
                 <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.sm, color: mode.textPrimary}}>Mode</Text>
                 <Text className="font-funnel_regular mb-3" style={{fontSize: FONT.xs, color: mode.textPrimary}}>
@@ -61,6 +62,9 @@ export default function Appearance() {
                   <TouchableOpacity onPress={() => setMode('dark')} style={{backgroundColor: 'black',borderRadius: 50, height: scale(40), width: scale(40)}} activeOpacity={0.6}></TouchableOpacity>
                 </View>
               </View>
+              <TouchableOpacity onPress={() => router.push('/notif')}>
+                <Text style={{color: mode.main}}>Go</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
