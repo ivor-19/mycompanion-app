@@ -5,11 +5,11 @@ import { Alert, Button, Platform, StyleSheet, Text, View } from 'react-native';
 // Configure how notifications should be handled when app is in foreground
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true, // shows alert (Android + iOS)
+    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
-    shouldShowBanner: true, // required for iOS 17+
-    shouldShowList: true,   // required for iOS 17+
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -54,9 +54,12 @@ export default function Notif() {
     });
   }
 
-  // Schedule a notification at a specific time (e.g., 4:40 PM today)
+  // Schedule notification at specific time using WEEKLY trigger (more reliable)
   async function scheduleNotificationDelayed(): Promise<void> {
-   
+    const now = new Date();
+    const targetHour = 16;
+    const targetMinute = 50;
+    
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "Scheduled Notification ⏰",
@@ -64,57 +67,76 @@ export default function Notif() {
         data: { scheduledAt: Date.now() },
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour: 16,
-        minute: 50,
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+        weekday: now.getDay() + 1, // 1 = Sunday, 2 = Monday, etc.
+        hour: targetHour,
+        minute: targetMinute,
       },
     });
     
     Alert.alert(
       'Notification Scheduled',
-      `You can now close the app and it should still work!`
+      `Notification scheduled for today at ${targetHour}:${targetMinute}. Close the app to test!`
     );
   }
 
-   // Schedule a notification at a specific time (e.g., 4:40 PM today)
   async function scheduleNotificationDelayed2(): Promise<void> {
-   
+    const now = new Date();
+    const targetHour = 22;
+    const targetMinute = 28;
+    
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "Scheduled Notification ⏰",
-        body: 'This notification was scheduled for 4:52 PM',
+        body: 'This notification was scheduled for 10:28 PM',
         data: { scheduledAt: Date.now() },
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour: 22,
-        minute: 28,
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+        weekday: now.getDay() + 1,
+        hour: targetHour,
+        minute: targetMinute,
       },
     });
     
     Alert.alert(
       'Notification Scheduled',
-      `You can now close the app and it should still work!`
+      `Notification scheduled for today at ${targetHour}:${targetMinute}. Close the app to test!`
     );
   }
 
-  // Schedule a daily notification at specific time (example: 9:00 AM)
+  // Schedule daily notification using WEEKLY trigger for all 7 days
   async function scheduleDailyNotification(): Promise<void> {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Good Morning! 🌅",
-        body: 'Time to check in with your companion',
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour: 9,
-        minute: 0,
-      },
-    });
+    // Cancel existing daily notifications first
+    const allScheduled = await Notifications.getAllScheduledNotificationsAsync();
+    for (const notif of allScheduled) {
+      if (notif.content.title === "Good Morning! 🌅") {
+        await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+      }
+    }
+
+    // Schedule for all 7 days of the week
+    const notificationIds: string[] = [];
+    for (let weekday = 1; weekday <= 7; weekday++) {
+      const id = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Good Morning! 🌅",
+          body: 'Time to check in with your companion',
+          data: { type: 'daily-reminder', weekday },
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+          weekday: weekday, // 1 = Sunday through 7 = Saturday
+          hour: 9,
+          minute: 0,
+        },
+      });
+      notificationIds.push(id);
+    }
 
     Alert.alert(
       'Daily Notification Set',
-      'You will receive a notification every day at 9:00 AM'
+      `You will receive a notification every day at 9:00 AM (${notificationIds.length} notifications scheduled)`
     );
   }
 
@@ -125,45 +147,55 @@ export default function Notif() {
   }
 
   // View all scheduled notifications
- async function viewScheduledNotifications(): Promise<void> {
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  console.log('Scheduled notifications:', scheduled);
-  
-  if (scheduled.length === 0) {
-    Alert.alert('No Scheduled Notifications', 'There are no notifications scheduled.');
-  } else {
-    const notificationList = scheduled.map((notif, index) => {
-      const trigger = notif.trigger as any;
-      let timeString = 'Unknown time';
-      
-      if (trigger.type === 'daily' || trigger.type === 'weekly') {
-        const hour = trigger.hour ?? 0;
-        const minute = trigger.minute ?? 0;
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
-        timeString = `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
-        
-        if (trigger.type === 'weekly' && trigger.weekday) {
-          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-          const dayName = days[trigger.weekday - 1] || 'Unknown';
-          timeString = `${dayName} at ${timeString}`;
-        }
-      }
-      
-      return `${index + 1}. ${notif.content.title}\n   ${timeString}`;
-    }).join('\n\n');
+  async function viewScheduledNotifications(): Promise<void> {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    console.log('Scheduled notifications:', scheduled);
     
-    Alert.alert(
-      `Scheduled (${scheduled.length})`,
-      notificationList
-    );
+    if (scheduled.length === 0) {
+      Alert.alert('No Scheduled Notifications', 'There are no notifications scheduled.');
+    } else {
+      const notificationList = scheduled.map((notif, index) => {
+        const trigger = notif.trigger as any;
+        let timeString = 'Unknown time';
+        
+        if (trigger.type === 'weekly') {
+          const hour = trigger.hour ?? 0;
+          const minute = trigger.minute ?? 0;
+          const period = hour >= 12 ? 'PM' : 'AM';
+          const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+          timeString = `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+          
+          if (trigger.weekday) {
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = days[trigger.weekday - 1] || 'Unknown';
+            timeString = `${dayName} at ${timeString}`;
+          }
+        } else if (trigger.type === 'timeInterval') {
+          const seconds = trigger.seconds || 0;
+          timeString = `In ${Math.round(seconds / 60)} minutes`;
+        }
+        
+        return `${index + 1}. ${notif.content.title}\n   ${timeString}\n   Type: ${trigger.type}`;
+      }).join('\n\n');
+      
+      Alert.alert(
+        `Scheduled (${scheduled.length})`,
+        notificationList,
+        [{ text: 'OK' }],
+        { cancelable: true }
+      );
+    }
   }
-}
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Expo Local Notifications</Text>
       
+      <Text style={styles.infoText}>
+        Note: In production, DAILY triggers don't work reliably on Android.
+        This version uses WEEKLY triggers which work in both dev and production.
+      </Text>
+
       <View style={styles.buttonContainer}>
         <Button
           title="Send Notification Now"
@@ -179,9 +211,9 @@ export default function Notif() {
         />
       </View>
 
-       <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer}>
         <Button
-          title="Schedule at 4:52 PM"
+          title="Schedule at 10:28 PM"
           onPress={scheduleNotificationDelayed2}
           color="#2196F3"
         />
@@ -263,9 +295,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginBottom: 15,
     textAlign: 'center',
     color: '#333',
+  },
+  infoText: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    fontStyle: 'italic',
   },
   buttonContainer: {
     marginVertical: 8,
