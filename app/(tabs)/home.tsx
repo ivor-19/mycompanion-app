@@ -229,12 +229,14 @@ export default function Home() {
                 {reminders.length !== 0 ? (
                   <>
                     {reminders.map((reminder, index) => (                  
-                      <View key={index} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                      <View key={reminder.id} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
                         <View className="flex-row items-center gap-3 flex-1">
                           <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
                           <View className="flex-1">
                             <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>{reminder.name}</Text>
-                            <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>{reminder.hour}:{reminder.minute} {reminder.period}  • {formatDays(reminder.days)}</Text>
+                            <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                              {reminder.hour}:{reminder.minute} {reminder.period} • Daily
+                            </Text>
                           </View>
                         </View>
                         <TouchableOpacity activeOpacity={0.7} onPress={() => deleteReminder(reminder.id)}>
@@ -250,14 +252,14 @@ export default function Home() {
                     </View>
                   </View>
                 )}
-                                   
+                                  
               </View>
-             
+            
               {/* Set Reminder Button */}
               {reminders.length === 5 ? (
                 <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
                   <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
-                    <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>You’ve reached the maximum limit for reminders (5).</Text>
+                    <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>You've reached the maximum limit for reminders (5).</Text>
                   </View>
                 </View>
               ):(
