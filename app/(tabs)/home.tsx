@@ -100,7 +100,7 @@ export default function Home() {
   const affirmation = getRandomAffirmation()
   const { theme } = useThemeStore()
   const { mode } = useColorModeStore()
-  const { reminders } = useReminderStore()
+  const { reminders, deleteReminder } = useReminderStore()
   const [reminderOpen, setReminderOpen] = useState(false)
 
   // Calculate stats from mood data
@@ -134,9 +134,9 @@ export default function Home() {
     <View className="min-h-screen"> 
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
         <GBackground>
-          <View className="min-h-screen items-center w-full gap-4 mb-32" style={{paddingTop: scale(24)}}>
+          <View className="min-h-screen items-center w-full gap-4 mb-32">
             {/* Header Section */}
-            <View className="rounded-b-[30px] pt-4 px-6 pb-6 flex-col gap-4 w-full" style={{backgroundColor: mode.main, elevation: 4, shadowColor: 'gray'}}>
+            <View className="rounded-b-[30px] px-6 pb-6 flex-col gap-4 w-full" style={{backgroundColor: mode.main, elevation: 4, shadowColor: 'gray', paddingTop: scale(28)}}>
               <View className="flex-row justify-between">
                 <View className="justify-center">
                   <Text className="font-cb" style={{fontSize: FONT.lg, color: theme.accent}}>MY COMPANION</Text>
@@ -175,7 +175,7 @@ export default function Home() {
               </View>
               <View className="w-[60%] flex-col justify-center items-end gap-4 ">
                 <View className="flex-col gap-2"> 
-                  <Text className="font-cb text-white leading-7 text-right" style={{fontSize: FONT.xl}}>MEET EUNOIA YOUR AI COMPANION</Text>
+                  <Text className="font-cb text-white leading-7 text-right" style={{fontSize: FONT.xl}}>MEET EUNOIA YOUR BEST COMPANION</Text>
                   <Text className="font-funnel_regular text-right text-white  leading-5 opacity-90" style={{fontSize: FONT.xs}}>
                     Begin your journey to better mental wellness today
                   </Text>
@@ -229,16 +229,18 @@ export default function Home() {
                 {reminders.length !== 0 ? (
                   <>
                     {reminders.map((reminder, index) => (                  
-                      <TouchableOpacity key={index} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                      <View key={index} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
                         <View className="flex-row items-center gap-3 flex-1">
                           <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
                           <View className="flex-1">
                             <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>{reminder.name}</Text>
-                            <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>{reminder.hour}:{reminder.minute} • {formatDays(reminder.days)}</Text>
+                            <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>{reminder.hour}:{reminder.minute} {reminder.period}  • {formatDays(reminder.days)}</Text>
                           </View>
                         </View>
-                        <RemixIcon name="close-line" size={scale(20)} color={mode.textSecondary}/>
-                      </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => deleteReminder(reminder.id)}>
+                          <RemixIcon name="close-line" size={scale(20)} color={mode.textSecondary}/>
+                        </TouchableOpacity>
+                      </View>
                     ))}      
                   </>
                 ):(
@@ -252,10 +254,18 @@ export default function Home() {
               </View>
 
               {/* Set Reminder Button */}
-              <TouchableOpacity className="rounded-3xl p-4 flex-row items-center justify-center gap-2" onPress={() => setReminderOpen(true)} activeOpacity={0.7} style={{backgroundColor: theme.primary + '90'}} >
-                <RemixIcon name="add-line" size={scale(20)} color={'white'}/>
-                <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: 'white'}}>Set Reminder</Text>
-              </TouchableOpacity>
+              {reminders.length === 5 ? (
+                <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                  <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
+                    <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>You’ve reached the maximum limit for reminders (5).</Text>
+                  </View>
+                </View>
+              ):(
+                <TouchableOpacity className="rounded-3xl p-4 flex-row items-center justify-center gap-2" onPress={() => setReminderOpen(true)} activeOpacity={0.7} style={{backgroundColor: theme.primary + '90'}} >
+                  <RemixIcon name="add-line" size={scale(20)} color={'white'}/>
+                  <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: 'white'}}>Set Reminder</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Progress Overview - Enhanced */}

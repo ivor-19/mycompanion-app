@@ -8,12 +8,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useReminderStore } from "@/stores/reminderStore";
 import { useEffect } from 'react';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const initializeNotifications = useReminderStore((state) => state.initializeNotifications); // Add this
   const [fontsLoaded, error] = useFonts({
     "NataRegular": require("../assets/fonts/NataSans-Regular.ttf"),
     "NataMedium": require("../assets/fonts/NataSans-Medium.ttf"),
@@ -30,7 +32,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (error) throw error;
-    if (fontsLoaded) SplashScreen.hideAsync();
+    if (fontsLoaded) 
+      SplashScreen.hideAsync();
+      initializeNotifications(); 
   }, [fontsLoaded, error]);
 
   if (!fontsLoaded) return null;

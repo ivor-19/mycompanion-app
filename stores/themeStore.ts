@@ -151,7 +151,7 @@ const themes: Record<string, Theme> = {
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
-      theme: themes.softPeach, // default theme
+      theme: themes.softPink, // default theme
       setTheme: (themeName) =>
         set({ theme: themes[themeName as keyof typeof themes] || themes.softPink }),
     }),

@@ -1,10 +1,8 @@
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
-  AlertDialogHeader,
+  AlertDialogHeader
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
 import { FONT } from '@/lib/scale';
@@ -12,7 +10,7 @@ import { useColorModeStore } from '@/stores/colorModeStore';
 import { useReminderStore } from '@/stores/reminderStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import RemixIcon from 'react-native-remix-icon';
 import { scale } from 'react-native-size-matters';
 import TimePicker from '../TimePicker';
@@ -36,6 +34,8 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
   const [timeUntilReminder, setTimeUntilReminder] = useState('')
   const [showHourPicker, setShowHourPicker] = useState(false)
   const [showMinutePicker, setShowMinutePicker] = useState(false)
+  const [errorTitle, setErrorTitle] = useState(false)
+  const [errorTime, setErrorTime] = useState(false)
 
   const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'))
   const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))
@@ -140,12 +140,12 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
   const handleSave = () => {
     // Validation
     if (!reminderName.trim()) {
-      Alert.alert('Error', 'Please enter a reminder name')
+      setErrorTitle(true)
       return
     }
 
     if (selectedDays.length === 0) {
-      Alert.alert('Error', 'Please select at least one day')
+      setErrorTime(true)
       return
     }
 
@@ -158,12 +158,9 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
       selectedDays,
       soundEnabled
     )
-
-    // Close modal
     setOpen(false)
-    
-    // Show success message
-    Alert.alert('Success', 'Reminder created successfully!')
+    setErrorTitle(false)
+    setErrorTime(false)
   }
 
   return(
@@ -200,7 +197,12 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
 
               {/* Reminder Name */}
               <View className='gap-2'>
-                <Text className='font-nt_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Reminder Name</Text>
+                <View className='justify-between flex-row'>
+                  <Text className='font-nt_regular text-left' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Reminder Title</Text>
+                  {errorTitle &&
+                    <Text className='font-nt_regular text-left' style={{fontSize: FONT.xxs, color: 'red'}}>Reminder title is required</Text>
+                  }
+                </View>
                 <View className='w-full border-[1px] rounded-xl px-3 py-2' style={{borderColor: mode.neutral}}>
                   <TextInput 
                     placeholder="e.g., Daily Check-in"
@@ -215,18 +217,21 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
                     onChangeText={setReminderName}
                   />
                 </View>
+               
+               
               </View>
 
               {/* Time Picker */}
               <View className='gap-2'>
-                <Text className='font-nt_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Time</Text>
+                <View className='justify-between flex-row'>
+                  <Text className='font-nt_regular text-left' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Time</Text>
+                  {errorTime &&
+                    <Text className='font-nt_regular text-left' style={{fontSize: FONT.xxs, color: 'red'}}>Select atleast one day</Text>
+                  }
+                </View>
                 <View className='flex-row items-center justify-center gap-2'>
                   {/* Hour Dropdown */}
-                  <TouchableOpacity 
-                    className='border-[1px] rounded-xl px-4 py-3 items-center flex-row justify-between' 
-                    style={{borderColor: mode.neutral, width: scale(70)}}
-                    onPress={() => setShowHourPicker(true)}
-                  >
+                  <TouchableOpacity className='border-[1px] rounded-xl px-4 py-3 items-center flex-row justify-between' style={{borderColor: mode.neutral, width: scale(70)}} onPress={() => setShowHourPicker(true)} >
                     <Text className='font-nt_medium' style={{fontSize: FONT.md, color: mode.textPrimary}}>
                       {hour}
                     </Text>
@@ -269,7 +274,6 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
 
               {/* Days Selection */}
               <View className='gap-2'>
-                <Text className='font-nt_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Repeat</Text>
                 <View className='flex-row flex-wrap gap-2'>
                   {days.map((day) => (
                     <TouchableOpacity
@@ -295,39 +299,21 @@ export default function ReminderSetupModal({ open, setOpen }: Props) {
                   ))}
                 </View>
               </View>
-
-              {/* Sound Toggle */}
-              <View className='flex-row items-center justify-between'>
-                <View className='flex-row items-center gap-2'>
-                  <RemixIcon name='volume-up-line' size={scale(16)} color={theme.accent}/>
-                  <Text className='font-nt_regular' style={{fontSize: FONT.xs, color: mode.textPrimary}}>Sound & Vibration</Text>
-                </View>
-                <TouchableOpacity 
-                  className='w-12 h-6 rounded-full justify-center px-0.5'
-                  style={{backgroundColor: soundEnabled ? theme.accent : mode.neutral}}
-                  onPress={() => setSoundEnabled(!soundEnabled)}
-                >
-                  <View 
-                    className='w-5 h-5 rounded-full bg-white'
-                    style={{alignSelf: soundEnabled ? 'flex-end' : 'flex-start'}}
-                  />
-                </TouchableOpacity>
-              </View>
             </View>
           </AlertDialogHeader>
         </ScrollView>
         
         <AlertDialogFooter className='flex-row w-full mt-4'>
-          <AlertDialogCancel className='flex-1 flex-row items-center justify-center' style={{backgroundColor: mode.card, borderWidth: 1, borderColor: mode.neutral}}>
-            <Text className='text-center font-nt_medium' style={{color: mode.textPrimary}}>Cancel</Text>
-          </AlertDialogCancel>
-          <AlertDialogAction 
+          <TouchableOpacity className='flex-1 flex-row items-center justify-center py-2' onPress={() => {setOpen(false), setErrorTitle(false), setErrorTime(false)}} style={{backgroundColor: mode.card, borderWidth: 1, borderColor: mode.neutral, borderRadius: 10}}>
+            <Text className='text-center font-nt_medium' style={{color: mode.textPrimary, fontSize: FONT.xs}}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
             className='flex-1 flex-row items-center justify-center' 
-            style={{backgroundColor: theme.primary}}
+            style={{backgroundColor: theme.primary, borderRadius: 10}}
             onPress={handleSave}
           >
-            <Text className='text-center font-nt_medium text-white'>Create Reminder</Text>
-          </AlertDialogAction>
+            <Text className='text-center font-nt_medium text-white' style={{fontSize: FONT.xs}}>Create Reminder</Text>
+          </TouchableOpacity>
         </AlertDialogFooter>
       </AlertDialogContent>
 

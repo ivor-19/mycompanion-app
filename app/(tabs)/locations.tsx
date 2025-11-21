@@ -235,9 +235,9 @@ export default function Locations() {
   if (loading) {
     return (
       <PageLayout headerTitle="Clinic Locations">
-        <View className="flex-1 items-center justify-center">
+        <View className="flex-1 items-center justify-center" style={{backgroundColor: mode.main}}>
           <ActivityIndicator size="large" color={theme.primary}/>
-          <Text className="mt-2 text-gray-600 font-funnel_semi" style={{ fontSize: FONT.sm }} > Loading map... </Text>
+          <Text className="mt-2 font-funnel_semi" style={{ fontSize: FONT.sm, color: mode.textSecondary }} > Loading map... </Text>
         </View>
         <ListBottomSheet onLocationPress={handleLocationPress} />
       </PageLayout>

@@ -37,12 +37,8 @@ export default function Notif() {
     );
 
     return () => {
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      }
-      if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
-      }
+      notificationListener.current?.remove();
+      responseListener.current?.remove();
     };
   }, []);
 
@@ -58,28 +54,94 @@ export default function Notif() {
     });
   }
 
-  // Schedule a notification after 5 seconds
+  // Schedule a notification at a specific time (e.g., 4:40 PM today)
   async function scheduleNotificationDelayed(): Promise<void> {
+   
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Delayed Notification ⏰",
-        body: 'This was scheduled 10 seconds ago',
+        title: "Scheduled Notification ⏰",
+        body: 'This notification was scheduled for 4:50 PM',
+        data: { scheduledAt: Date.now() },
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 10,
-        repeats: false,
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour: 16,
+        minute: 50,
       },
     });
+    
+    Alert.alert(
+      'Notification Scheduled',
+      `You can now close the app and it should still work!`
+    );
   }
 
-  // Schedule a daily notification at specific time
+   // Schedule a notification at a specific time (e.g., 4:40 PM today)
+  async function scheduleNotificationDelayed2(): Promise<void> {
+   
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Scheduled Notification ⏰",
+        body: 'This notification was scheduled for 4:52 PM',
+        data: { scheduledAt: Date.now() },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour: 22,
+        minute: 28,
+      },
+    });
+    
+    Alert.alert(
+      'Notification Scheduled',
+      `You can now close the app and it should still work!`
+    );
+  }
 
+  // Schedule a daily notification at specific time (example: 9:00 AM)
+  async function scheduleDailyNotification(): Promise<void> {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Good Morning! 🌅",
+        body: 'Time to check in with your companion',
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour: 9,
+        minute: 0,
+      },
+    });
+
+    Alert.alert(
+      'Daily Notification Set',
+      'You will receive a notification every day at 9:00 AM'
+    );
+  }
 
   // Cancel all scheduled notifications
   async function cancelAllNotifications(): Promise<void> {
     await Notifications.cancelAllScheduledNotificationsAsync();
-    Alert.alert('Success', 'All notifications cancelled');
+    Alert.alert('All Notifications Cancelled', 'All scheduled notifications have been removed.');
+  }
+
+  // View all scheduled notifications
+  async function viewScheduledNotifications(): Promise<void> {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    console.log('Scheduled notifications:', scheduled);
+    
+    if (scheduled.length === 0) {
+      Alert.alert('No Scheduled Notifications', 'There are no notifications scheduled.');
+    } else {
+      const notificationList = scheduled.map((notif, index) => {
+        const trigger = notif.trigger as any;
+        return `${index + 1}. ${notif.content.title} - ${trigger.value ? new Date(trigger.value).toLocaleString() : 'Unknown time'}`;
+      }).join('\n\n');
+      
+      Alert.alert(
+        `Scheduled (${scheduled.length})`,
+        notificationList
+      );
+    }
   }
 
   return (
@@ -95,26 +157,53 @@ export default function Notif() {
 
       <View style={styles.buttonContainer}>
         <Button
-          title="Schedule in 10 Seconds"
+          title="Schedule at 4:50 PM"
           onPress={scheduleNotificationDelayed}
+          color="#2196F3"
         />
       </View>
 
-      
+       <View style={styles.buttonContainer}>
+        <Button
+          title="Schedule at 4:52 PM"
+          onPress={scheduleNotificationDelayed2}
+          color="#2196F3"
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Schedule Daily (9:00 AM)"
+          onPress={scheduleDailyNotification}
+          color="#4CAF50"
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="View Scheduled Notifications"
+          onPress={viewScheduledNotifications}
+          color="#FF9800"
+        />
+      </View>
 
       <View style={styles.buttonContainer}>
         <Button
           title="Cancel All Notifications"
           onPress={cancelAllNotifications}
-          color="red"
+          color="#F44336"
         />
       </View>
 
       {notification && (
         <View style={styles.notificationInfo}>
           <Text style={styles.notificationTitle}>Last Notification:</Text>
-          <Text>{notification.request.content.title}</Text>
-          <Text>{notification.request.content.body}</Text>
+          <Text style={styles.notificationText}>
+            {notification.request.content.title}
+          </Text>
+          <Text style={styles.notificationBody}>
+            {notification.request.content.body}
+          </Text>
         </View>
       )}
     </View>
@@ -128,6 +217,7 @@ async function registerForPushNotificationsAsync(): Promise<void> {
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
+      sound: 'default',
     });
   }
 
@@ -143,6 +233,8 @@ async function registerForPushNotificationsAsync(): Promise<void> {
     Alert.alert('Permission Error', 'Failed to get push notification permissions!');
     return;
   }
+
+  console.log('Notification permissions granted');
 }
 
 const styles = StyleSheet.create({
@@ -157,6 +249,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 30,
     textAlign: 'center',
+    color: '#333',
   },
   buttonContainer: {
     marginVertical: 8,
@@ -166,9 +259,23 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: '#e3f2fd',
     borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
   },
   notificationTitle: {
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 8,
+    fontSize: 16,
+    color: '#1976D2',
+  },
+  notificationText: {
+    fontWeight: '600',
+    fontSize: 15,
+    color: '#333',
+    marginBottom: 4,
+  },
+  notificationBody: {
+    fontSize: 14,
+    color: '#666',
   },
 });

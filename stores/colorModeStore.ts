@@ -55,7 +55,7 @@ const modes: Record<string, Mode> = {
 export const useColorModeStore = create<ModeStore>()(
   persist(
     (set) => ({
-      mode: modes.dark, // default
+      mode: modes.light, // default
       setMode: (modeName) =>
         set({ mode: modes[modeName as keyof typeof modes] || modes.light }),
     }),
