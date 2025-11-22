@@ -496,6 +496,7 @@ const useReminderStore = create<ReminderStore>()(
               type: Notifications.SchedulableTriggerInputTypes.DAILY,
               hour: hour24,
               minute: min,
+              channelId: "default"
             },
           });
 
@@ -601,3 +602,4 @@ const useReminderStore = create<ReminderStore>()(
 );
 
 export { useReminderStore };
+

@@ -59,6 +59,7 @@ export default function Notif() {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour,
         minute,
+        channelId: "default",
       },
     });
 
@@ -93,9 +94,9 @@ export default function Notif() {
           const m = trigger.minute || 0;
           const period = h >= 12 ? "PM" : "AM";
           const displayH = h % 12 || 12;
-          return `${i + 1}. ${notif.content.title}\n   Daily at ${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+          return `${i + 1}. ${notif.content.body}\n   Daily at ${displayH}:${m.toString().padStart(2, '0')} ${period}`;
         }
-        return `${i + 1}. ${notif.content.title}`;
+        return `${i + 1}. ${notif.content.body}`;
       })
       .join("\n\n");
 

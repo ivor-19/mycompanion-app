@@ -8,8 +8,9 @@ import { useReminderStore } from "@/stores/reminderStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Notifications from 'expo-notifications';
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RemixIcon from "react-native-remix-icon";
 import { scale } from "react-native-size-matters";
@@ -130,6 +131,23 @@ export default function Home() {
     return(days.join(', '))
   }
 
+  const [scheduledNotifications, setScheduledNotifications] = useState<any[]>([]);
+
+  // Fetch scheduled notifications
+  const fetchScheduledNotifications = async () => {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    setScheduledNotifications(scheduled);
+  };
+
+  useEffect(() => {
+    fetchScheduledNotifications();
+    
+    // Optionally refresh the list periodically or when the screen focuses
+    const interval = setInterval(fetchScheduledNotifications, 5000); // Refresh every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <View className="min-h-screen"> 
       <ScrollView style={{flexGrow: 1}} showsVerticalScrollIndicator={false}>
@@ -224,46 +242,75 @@ export default function Home() {
             <View className="w-[95%] px-2">
               <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.md, color: mode.textPrimary}}>Reminder Settings</Text>
               
-              {/* Reminder Items */}
+              {/* Scheduled Notifications List */}
               <View className="rounded-3xl mb-3 overflow-hidden" style={{backgroundColor: mode.card, elevation: 2, shadowColor: 'gray'}}>
-                {reminders.length !== 0 ? (
+                {scheduledNotifications.length !== 0 ? (
                   <>
-                    {reminders.map((reminder, index) => (                  
-                      <View key={reminder.id} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
-                        <View className="flex-row items-center gap-3 flex-1">
-                          <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
-                          <View className="flex-1">
-                            <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>{reminder.name}</Text>
-                            <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
-                              {reminder.hour}:{reminder.minute} {reminder.period} • Daily
-                            </Text>
+                    {scheduledNotifications.map((notif, index) => {
+                      const trigger = notif.trigger as any;
+                      let timeDisplay = '';
+                      
+                      if (trigger.type === "daily") {
+                        const h = trigger.hour || 0;
+                        const m = trigger.minute || 0;
+                        const period = h >= 12 ? "PM" : "AM";
+                        const displayH = h % 12 || 12;
+                        timeDisplay = `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+                      }
+                      
+                      return (
+                        <View key={notif.identifier} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                          <View className="flex-row items-center gap-3 flex-1">
+                            <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
+                            <View className="flex-1">
+                              <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>
+                                {notif.content.body.replace(/^Reminder:\s*/i, "")}
+                              </Text>
+                              <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                                {timeDisplay} • Daily
+                              </Text>
+                            </View>
                           </View>
+                          <TouchableOpacity 
+                            activeOpacity={0.7} 
+                            onPress={async () => {
+                              await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+                              fetchScheduledNotifications(); // Refresh the list
+                            }}
+                          >
+                            <RemixIcon name="close-line" size={scale(20)} color={mode.textSecondary}/>
+                          </TouchableOpacity>
                         </View>
-                        <TouchableOpacity activeOpacity={0.7} onPress={() => deleteReminder(reminder.id)}>
-                          <RemixIcon name="close-line" size={scale(20)} color={mode.textSecondary}/>
-                        </TouchableOpacity>
-                      </View>
-                    ))}      
+                      );
+                    })}      
                   </>
                 ):(
                   <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
                     <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
-                      <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>There are currently no reminders to show. </Text>
+                      <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                        There are currently no reminders to show.
+                      </Text>
                     </View>
                   </View>
                 )}
-                                  
               </View>
-            
+
               {/* Set Reminder Button */}
-              {reminders.length === 5 ? (
+              {scheduledNotifications.length >= 5 ? (
                 <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
                   <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
-                    <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>You've reached the maximum limit for reminders (5).</Text>
+                    <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                      You've reached the maximum limit for reminders (5).
+                    </Text>
                   </View>
                 </View>
               ):(
-                <TouchableOpacity className="rounded-3xl p-4 flex-row items-center justify-center gap-2" onPress={() => setReminderOpen(true)} activeOpacity={0.7} style={{backgroundColor: theme.primary + '90'}} >
+                <TouchableOpacity 
+                  className="rounded-3xl p-4 flex-row items-center justify-center gap-2" 
+                  onPress={() => setReminderOpen(true)} 
+                  activeOpacity={0.7} 
+                  style={{backgroundColor: theme.primary + '90'}}
+                >
                   <RemixIcon name="add-line" size={scale(20)} color={'white'}/>
                   <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: 'white'}}>Set Reminder</Text>
                 </TouchableOpacity>
@@ -297,7 +344,6 @@ export default function Home() {
                   </View>
                
                 </View>
-
                 {/* Mood Trend Indicator */}
                 <View className="flex-row items-center justify-between pt-3 border-t" style={{borderColor: mode.neutral}}>
                   <View className="flex-row items-center gap-2">
