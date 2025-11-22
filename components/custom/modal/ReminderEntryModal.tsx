@@ -10,10 +10,21 @@ import { useColorModeStore } from '@/stores/colorModeStore';
 import { useThemeStore } from '@/stores/themeStore';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import RemixIcon from 'react-native-remix-icon';
 import { scale } from 'react-native-size-matters';
 import TimePicker from '../TimePicker';
+
+// Configure notification behavior in foreground (IMPORTANT FOR PRODUCTION)
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 interface Props {
   open: boolean;
@@ -30,6 +41,31 @@ const reminderTitles = [
   "Quick reminder for you! 🫶",
   "Friendly ping! Check this out 💬",
 ];
+
+// Register for push notifications (CRITICAL FOR PRODUCTION)
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+      sound: "default",
+    });
+  }
+
+  let { status } = await Notifications.getPermissionsAsync();
+  if (status !== "granted") {
+    const req = await Notifications.requestPermissionsAsync();
+    status = req.status;
+  }
+
+  if (status !== "granted") {
+    Alert.alert("Permission Error", "Failed to get push notification permissions!");
+    return false;
+  }
+  return true;
+}
 
 export default function ReminderSetupModal({ open, setOpen, onReminderCreated }: Props) {
   const { theme } = useThemeStore()
@@ -48,6 +84,13 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
 
   const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'))
   const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))
+
+  // Register permissions when modal opens
+  useEffect(() => {
+    if (open) {
+      registerForPushNotificationsAsync();
+    }
+  }, [open]);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -116,9 +159,18 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
       setErrorTitle(true)
       return
     }
+    
     setLoading(true)
     
     try {
+      // Ensure permissions are granted before scheduling
+      const hasPermission = await registerForPushNotificationsAsync();
+      if (!hasPermission) {
+        Alert.alert('Permission Required', 'Please grant notification permissions to set reminders.');
+        setLoading(false);
+        return;
+      }
+
       // Convert 12-hour format to 24-hour format for notification
       let notificationHour = parseInt(hour)
       if (period === 'PM' && notificationHour !== 12) {
@@ -127,12 +179,11 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         notificationHour = 0
       }
       
-      // Schedule the notification directly with Expo Notifications
-      const notificationId = await Notifications.scheduleNotificationAsync({
+      // Schedule the notification (using the exact same method as working code)
+      await Notifications.scheduleNotificationAsync({
         content: {
           title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
           body: `Reminder: ${reminderName.trim()}`,
-          sound: soundEnabled ? 'default' : undefined,
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -142,33 +193,26 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         },
       });
 
-      // Verify the notification was actually scheduled
-      const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-      const wasScheduled = scheduledNotifications.some(notif => notif.identifier === notificationId);
-
-      if (wasScheduled) {
-        // Only close if notification was successfully added
-        setOpen(false)
-        setErrorTitle(false)
-        
-        // Refresh the notifications list in parent component
-        if (onReminderCreated) {
-          onReminderCreated()
-        }
-      } else {
-        // If not scheduled, show error
-        setErrorTitle(true)
-        Alert.alert('Error', 'Failed to schedule notification. Please try again.')
+      // Success - close modal
+      setOpen(false)
+      setErrorTitle(false)
+      
+      // Show success message
+      const displayHour = notificationHour % 12 || 12;
+      const displayPeriod = notificationHour >= 12 ? "PM" : "AM";
+      // Alert.alert("Scheduled ✓", `Daily notification set for ${displayHour}:${minute} ${displayPeriod}`);
+      
+      // Refresh the notifications list in parent component
+      if (onReminderCreated) {
+        onReminderCreated()
       }
-    } catch (error) {
+    } catch (error : any) {
       console.error('Error scheduling notification:', error)
-      setErrorTitle(true)
-      Alert.alert('Error', 'Failed to schedule notification. Please try again.')
+      Alert.alert('Error', `Failed to schedule notification: ${error.message || 'Please try again.'}`)
     } finally {
       setLoading(false)
     }
   }
-
 
   return(
     <AlertDialog open={open} onOpenChange={setOpen}>
