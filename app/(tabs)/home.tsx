@@ -4,7 +4,6 @@ import { getRandomAffirmation } from "@/helper/affirmation";
 import { FONT } from "@/lib/scale";
 import { useColorModeStore } from "@/stores/colorModeStore";
 import { useMoodStore } from "@/stores/moodStore";
-import { useReminderStore } from "@/stores/reminderStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -101,7 +100,6 @@ export default function Home() {
   const affirmation = getRandomAffirmation()
   const { theme } = useThemeStore()
   const { mode } = useColorModeStore()
-  const { reminders, deleteReminder } = useReminderStore()
   const [reminderOpen, setReminderOpen] = useState(false)
 
   // Calculate stats from mood data
@@ -239,18 +237,16 @@ export default function Home() {
               </View>
             </View>
 
-            <View className="w-[95%] px-2">
+            {/* <View className="w-[95%] px-2">
               <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.md, color: mode.textPrimary}}>Reminder Settings</Text>
               
-              {/* Scheduled Notifications List */}
+            
               <View className="rounded-3xl mb-3 overflow-hidden" style={{backgroundColor: mode.card, elevation: 2, shadowColor: 'gray'}}>
                 {scheduledNotifications.length !== 0 ? (
                   <>
                     {scheduledNotifications.map((notif, index) => {
                       const trigger = notif.trigger as any;
                       const data = notif.content.data as { selectedDays?: number[], reminderName?: string };
-                      console.log('Notification data:', data); // ADD THIS LINE
-                      console.log('Selected days:', data?.selectedDays); // AND THIS
                       const selectedDays = data?.selectedDays;
                       
                       
@@ -324,7 +320,7 @@ export default function Home() {
                 )}
               </View>
 
-              {/* Set Reminder Button */}
+    
               {scheduledNotifications.length >= 5 ? (
                 <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
                   <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
@@ -344,6 +340,181 @@ export default function Home() {
                   <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: 'white'}}>Set Reminder</Text>
                 </TouchableOpacity>
               )}
+            </View>  */}
+
+            <View className="w-[95%] px-2">
+              <Text className="font-funnel_semi mb-3" style={{fontSize: FONT.md, color: mode.textPrimary}}>Reminder Settings</Text>
+              
+              {/* Scheduled Notifications List */}
+              <View className="rounded-3xl mb-3 overflow-hidden" style={{backgroundColor: mode.card, elevation: 2, shadowColor: 'gray'}}>
+                {scheduledNotifications.length !== 0 ? (
+                  <>
+                    {/* Group notifications by reminder name and time */}
+                    {(() => {
+                      // Group weekly notifications that belong to the same reminder
+                      const groupedReminders = new Map<string, {
+                        notifications: any[],
+                        time: string,
+                        days: number[],
+                        reminderName: string,
+                        firstId: string
+                      }>();
+
+                      scheduledNotifications.forEach((notif) => {
+                        const trigger = notif.trigger as any;
+                        const data = notif.content.data as { dayOfWeek?: number, reminderName?: string };
+                        
+                        // Handle WEEKLY triggers
+                        if (trigger.type === "weekly") {
+                          const h = trigger.hour || 0;
+                          const m = trigger.minute || 0;
+                          const period = h >= 12 ? "PM" : "AM";
+                          const displayH = h % 12 || 12;
+                          const timeDisplay = `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+                          
+                          const reminderName = data?.reminderName || notif.content.body?.replace('Reminder: ', '') || notif.content.title || 'Reminder';
+                          const dayOfWeek = trigger.weekday ? trigger.weekday - 1 : 0; // Convert back from 1-7 to 0-6
+                          
+                          // Create a unique key for this reminder (name + time)
+                          const groupKey = `${reminderName}_${timeDisplay}`;
+                          
+                          if (!groupedReminders.has(groupKey)) {
+                            groupedReminders.set(groupKey, {
+                              notifications: [notif],
+                              time: timeDisplay,
+                              days: [dayOfWeek],
+                              reminderName: reminderName,
+                              firstId: notif.identifier
+                            });
+                          } else {
+                            const group = groupedReminders.get(groupKey)!;
+                            group.notifications.push(notif);
+                            group.days.push(dayOfWeek);
+                            group.days.sort((a, b) => a - b);
+                          }
+                        }
+                        // Handle legacy DAILY triggers (if any still exist)
+                        else if (trigger.type === "daily") {
+                          const h = trigger.hour || 0;
+                          const m = trigger.minute || 0;
+                          const period = h >= 12 ? "PM" : "AM";
+                          const displayH = h % 12 || 12;
+                          const timeDisplay = `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+                          
+                          const reminderName = data?.reminderName || notif.content.body?.replace('Reminder: ', '') || notif.content.title || 'Reminder';
+                          const groupKey = `${reminderName}_${timeDisplay}_legacy`;
+                          
+                          groupedReminders.set(groupKey, {
+                            notifications: [notif],
+                            time: timeDisplay,
+                            days: [0, 1, 2, 3, 4, 5, 6], // All days
+                            reminderName: reminderName,
+                            firstId: notif.identifier
+                          });
+                        }
+                      });
+
+                      // Render grouped reminders
+                      return Array.from(groupedReminders.values()).map((group) => {
+                        // Format day display
+                        let dayDisplay = 'Daily';
+                        const days = group.days;
+                        
+                        if (days.length === 7) {
+                          dayDisplay = 'Daily';
+                        } else if (days.length === 5 && 
+                                  days.includes(1) && 
+                                  days.includes(2) && 
+                                  days.includes(3) && 
+                                  days.includes(4) && 
+                                  days.includes(5)) {
+                          dayDisplay = 'Weekdays';
+                        } else if (days.length === 2 && 
+                                  days.includes(0) && 
+                                  days.includes(6)) {
+                          dayDisplay = 'Weekends';
+                        } else {
+                          const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                          dayDisplay = days.map(d => dayAbbreviations[d]).join(', ');
+                        }
+
+                        return (
+                          <View key={group.firstId} className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                            <View className="flex-row items-center gap-3 flex-1">
+                              <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
+                              <View className="flex-1">
+                                <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>
+                                  {group.reminderName}
+                                </Text>
+                                <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                                  {group.time} • {dayDisplay}
+                                </Text>
+                              </View>
+                            </View>
+                            <TouchableOpacity 
+                              activeOpacity={0.7} 
+                              onPress={async () => {
+                                // Cancel ALL notifications in this group
+                                for (const notif of group.notifications) {
+                                  await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+                                }
+                                fetchScheduledNotifications(); // Refresh the list
+                              }}
+                            >
+                              <RemixIcon name="close-line" size={scale(20)} color={mode.textSecondary}/>
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      });
+                    })()}      
+                  </>
+                ):(
+                  <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                    <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
+                      <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                        There are currently no reminders to show.
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+
+              {/* Set Reminder Button */}
+              {(() => {
+                // Count unique reminders (not individual day notifications)
+                const uniqueReminders = new Set<string>();
+                scheduledNotifications.forEach(notif => {
+                  const data = notif.content.data as { reminderName?: string };
+                  const trigger = notif.trigger as any;
+                  const h = trigger.hour || 0;
+                  const m = trigger.minute || 0;
+                  const period = h >= 12 ? "PM" : "AM";
+                  const displayH = h % 12 || 12;
+                  const timeDisplay = `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+                  const reminderName = data?.reminderName || notif.content.body?.replace('Reminder: ', '') || 'Reminder';
+                  uniqueReminders.add(`${reminderName}_${timeDisplay}`);
+                });
+
+                return uniqueReminders.size >= 5 ? (
+                  <View className="flex-row items-center justify-between p-4 border-b" style={{borderBottomColor: mode.main}}>
+                    <View className="flex-row items-center justify-center gap-3 flex-1 py-2">
+                      <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                        You've reached the maximum limit for reminders (5).
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <TouchableOpacity 
+                    className="rounded-3xl p-4 flex-row items-center justify-center gap-2" 
+                    onPress={() => setReminderOpen(true)} 
+                    activeOpacity={0.7} 
+                    style={{backgroundColor: theme.primary + '90'}}
+                  >
+                    <RemixIcon name="add-line" size={scale(20)} color={'white'}/>
+                    <Text className="font-funnel_semi" style={{fontSize: FONT.sm, color: 'white'}}>Set Reminder</Text>
+                  </TouchableOpacity>
+                );
+              })()}
             </View>
 
             {/* Progress Overview - Enhanced */}

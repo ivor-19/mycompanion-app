@@ -1,3 +1,4 @@
+
 import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
@@ -8,14 +9,68 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useReminderStore } from "@/stores/reminderStore";
+import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
+
+// Notifications.setNotificationHandler({
+//   handleNotification: async (notification) => {
+//     const data = notification.request.content.data as { selectedDays?: number[] };
+//     const selectedDays = data?.selectedDays;
+    
+//     // If no day selection (old notifications), show all days
+//     if (!selectedDays || !Array.isArray(selectedDays) || selectedDays.length === 7) {
+//       console.log('Showing - no filter');
+//       return {
+//         shouldPlaySound: true,
+//         shouldSetBadge: false,
+//         shouldShowBanner: true,
+//         shouldShowList: true,
+//       };
+//     }
+    
+//     // Check if today is in selected days
+//     const today = new Date().getDay(); // 0=Sunday, 1=Monday, etc.
+//     console.log('🔔 Notification handler fired!');
+//     console.log('Today:', today, 'Selected days:', selectedDays);
+    
+//     if (selectedDays.includes(today)) {
+//       // Show notification
+//       console.log('✅ Showing - today matches');
+//       return {
+//         shouldPlaySound: true,
+//         shouldSetBadge: false,
+//         shouldShowBanner: true,
+//         shouldShowList: true,
+//       };
+//     } else {
+//       // Silently dismiss
+//       console.log('❌ Hiding - today does not match');
+//       return {
+//         shouldPlaySound: false,
+//         shouldSetBadge: false,
+//         shouldShowBanner: false,
+//         shouldShowList: false,
+//       };
+//     }
+//   },
+// });
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    };
+  },
+});
+
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const initializeNotifications = useReminderStore((state) => state.initializeNotifications); // Add this
   const [fontsLoaded, error] = useFonts({
     "NataRegular": require("../assets/fonts/NataSans-Regular.ttf"),
     "NataMedium": require("../assets/fonts/NataSans-Medium.ttf"),
@@ -34,7 +89,6 @@ export default function RootLayout() {
     if (error) throw error;
     if (fontsLoaded) {
       SplashScreen.hideAsync();
-      initializeNotifications();
     }
   }, [fontsLoaded, error]);
 

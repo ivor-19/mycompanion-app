@@ -15,53 +15,6 @@ import RemixIcon from 'react-native-remix-icon';
 import { scale } from 'react-native-size-matters';
 import TimePicker from '../TimePicker';
 
-// Configure notification behavior with day filtering
-Notifications.setNotificationHandler({
-  handleNotification: async (notification) => {
-    const data = notification.request.content.data as { selectedDays?: number[] };
-    const selectedDays = data?.selectedDays;
-    
-    // If no day selection (old notifications), show all days
-    if (!selectedDays || !Array.isArray(selectedDays) || selectedDays.length === 7) {
-      console.log('Showing - no filter');
-      return {
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-        shouldShowBanner: true,
-        shouldShowList: true,
-      };
-    }
-    
-    // Check if today is in selected days
-    const today = new Date().getDay(); // 0=Sunday, 1=Monday, etc.
-    console.log('🔔 Notification handler fired!');
-    console.log('Today:', today, 'Selected days:', selectedDays);
-    
-    if (selectedDays.includes(today)) {
-      // Show notification
-      console.log('✅ Showing - today matches');
-      return {
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-        shouldShowBanner: true,
-        shouldShowList: true,
-      };
-    } else {
-      // Silently dismiss
-      console.log('❌ Hiding - today does not match');
-      return {
-        shouldShowAlert: false,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-        shouldShowBanner: false,
-        shouldShowList: false,
-      };
-    }
-  },
-});
-
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -232,23 +185,29 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         notificationHour = 0
       }
       
-      // Schedule ONE daily notification with day data
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
-          body: `Reminder: ${reminderName.trim()}`,
-          data: {
-            selectedDays: selectedDays, // Store selected days
-            reminderName: reminderName.trim(),
+      // Schedule a WEEKLY notification for EACH selected day
+      const notificationIds = [];
+      for (const day of selectedDays) {
+        const id = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
+            body: `Reminder: ${reminderName.trim()}`,
+            data: {
+              reminderName: reminderName.trim(),
+              dayOfWeek: day,
+            },
           },
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DAILY,
-          hour: notificationHour,
-          minute: parseInt(minute),
-          channelId: "default",
-        },
-      });
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+            weekday: day + 1, // CRITICAL: Expo uses 1=Sunday, 2=Monday, etc.
+            hour: notificationHour,
+            minute: parseInt(minute),
+            channelId: "default",
+          },
+        });
+        notificationIds.push(id);
+        console.log(`✅ Scheduled notification for ${daysOfWeek[day].label} with ID: ${id}`);
+      }
 
       setOpen(false)
       setErrorTitle(false)
@@ -403,37 +362,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
                   ))}
                 </View>
               </View>
-
-              {/* Info Badge
-              <View className='w-full rounded-xl p-3' style={{backgroundColor: mode.card}}>
-                <View className='flex-row items-center gap-2'>
-                  <RemixIcon name='repeat-line' size={scale(14)} color={theme.accent}/>
-                  <Text className='font-nt_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
-                    {selectedDays.length === 7
-                      ? 'This reminder will repeat every day'
-                      : `This reminder will repeat on ${selectedDays.map(d => daysOfWeek[d].label).join(', ')}`}
-                  </Text>
-                </View>
-              </View> */}
-
-              {/* Sound Toggle
-              <View className='flex-row items-center justify-between'>
-                <View className='flex-row items-center gap-2'>
-                  <RemixIcon name='volume-up-line' size={scale(16)} color={mode.textSecondary}/>
-                  <Text className='font-nt_regular' style={{fontSize: FONT.xs, color: mode.textPrimary}}>Sound</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => setSoundEnabled(!soundEnabled)}
-                  className='rounded-full p-1'
-                  style={{backgroundColor: soundEnabled ? theme.accent : mode.neutral}}
-                >
-                  <View style={{width: scale(20), height: scale(20)}} className='items-center justify-center'>
-                    {soundEnabled && (
-                      <RemixIcon name='check-line' size={scale(14)} color='white'/>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              </View> */}
             </View>
           </AlertDialogHeader>
         </ScrollView>
