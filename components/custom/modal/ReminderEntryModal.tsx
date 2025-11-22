@@ -15,15 +15,51 @@ import RemixIcon from 'react-native-remix-icon';
 import { scale } from 'react-native-size-matters';
 import TimePicker from '../TimePicker';
 
-// Configure notification behavior in foreground (IMPORTANT FOR PRODUCTION)
+// Configure notification behavior with day filtering
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
+  handleNotification: async (notification) => {
+    const data = notification.request.content.data as { selectedDays?: number[] };
+    const selectedDays = data?.selectedDays;
+    
+    // If no day selection (old notifications), show all days
+    if (!selectedDays || !Array.isArray(selectedDays) || selectedDays.length === 7) {
+      console.log('Showing - no filter');
+      return {
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      };
+    }
+    
+    // Check if today is in selected days
+    const today = new Date().getDay(); // 0=Sunday, 1=Monday, etc.
+    console.log('🔔 Notification handler fired!');
+    console.log('Today:', today, 'Selected days:', selectedDays);
+    
+    if (selectedDays.includes(today)) {
+      // Show notification
+      console.log('✅ Showing - today matches');
+      return {
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      };
+    } else {
+      // Silently dismiss
+      console.log('❌ Hiding - today does not match');
+      return {
+        shouldShowAlert: false,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+        shouldShowBanner: false,
+        shouldShowList: false,
+      };
+    }
+  },
 });
 
 interface Props {
@@ -42,7 +78,16 @@ const reminderTitles = [
   "Friendly ping! Check this out 💬",
 ];
 
-// Register for push notifications (CRITICAL FOR PRODUCTION)
+const daysOfWeek = [
+  { label: 'Sun', value: 0 },
+  { label: 'Mon', value: 1 },
+  { label: 'Tue', value: 2 },
+  { label: 'Wed', value: 3 },
+  { label: 'Thu', value: 4 },
+  { label: 'Fri', value: 5 },
+  { label: 'Sat', value: 6 },
+];
+
 async function registerForPushNotificationsAsync() {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
@@ -81,18 +126,17 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
   const [showMinutePicker, setShowMinutePicker] = useState(false)
   const [errorTitle, setErrorTitle] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [selectedDays, setSelectedDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]) // All days by default
 
   const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'))
   const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))
 
-  // Register permissions when modal opens
   useEffect(() => {
     if (open) {
       registerForPushNotificationsAsync();
     }
   }, [open]);
 
-  // Reset form when modal opens
   useEffect(() => {
     if (open) {
       setReminderName('')
@@ -101,17 +145,27 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
       setPeriod('PM')
       setSoundEnabled(true)
       setErrorTitle(false)
+      setSelectedDays([0, 1, 2, 3, 4, 5, 6]) // Reset to all days
     }
   }, [open])
+
+  const toggleDay = (day: number) => {
+    if (selectedDays.includes(day)) {
+      // Don't allow deselecting if it's the last day
+      if (selectedDays.length === 1) {
+        Alert.alert('Error', 'Please select at least one day');
+        return;
+      }
+      setSelectedDays(selectedDays.filter(d => d !== day));
+    } else {
+      setSelectedDays([...selectedDays, day].sort((a, b) => a - b));
+    }
+  };
 
   const calculateTimeUntilReminder = () => {
     if (!hour || !minute) return
 
     const now = new Date()
-    const currentHour = now.getHours()
-    const currentMinute = now.getMinutes()
-
-    // Convert 12-hour format to 24-hour
     let targetHour = parseInt(hour)
     if (period === 'PM' && targetHour !== 12) {
       targetHour += 12
@@ -120,16 +174,13 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
     }
     const targetMinute = parseInt(minute)
 
-    // Create target time for today
     const targetTime = new Date()
     targetTime.setHours(targetHour, targetMinute, 0, 0)
 
-    // If time has already passed today, schedule for tomorrow
     if (targetTime <= now) {
       targetTime.setDate(targetTime.getDate() + 1)
     }
 
-    // Calculate the exact time difference
     const diff = targetTime.getTime() - now.getTime()
     const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
     const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
@@ -154,16 +205,19 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
   }, [hour, minute, period])
 
   const handleSave = async () => {
-    // Validation
     if (!reminderName.trim()) {
       setErrorTitle(true)
       return
     }
-    
+
+    if (selectedDays.length === 0) {
+      Alert.alert('Error', 'Please select at least one day');
+      return;
+    }
+
     setLoading(true)
     
     try {
-      // Ensure permissions are granted before scheduling
       const hasPermission = await registerForPushNotificationsAsync();
       if (!hasPermission) {
         Alert.alert('Permission Required', 'Please grant notification permissions to set reminders.');
@@ -171,7 +225,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         return;
       }
 
-      // Convert 12-hour format to 24-hour format for notification
       let notificationHour = parseInt(hour)
       if (period === 'PM' && notificationHour !== 12) {
         notificationHour += 12
@@ -179,11 +232,15 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         notificationHour = 0
       }
       
-      // Schedule the notification (using the exact same method as working code)
+      // Schedule ONE daily notification with day data
       await Notifications.scheduleNotificationAsync({
         content: {
           title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
           body: `Reminder: ${reminderName.trim()}`,
+          data: {
+            selectedDays: selectedDays, // Store selected days
+            reminderName: reminderName.trim(),
+          },
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -193,20 +250,22 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         },
       });
 
-      // Success - close modal
       setOpen(false)
       setErrorTitle(false)
       
-      // Show success message
       const displayHour = notificationHour % 12 || 12;
       const displayPeriod = notificationHour >= 12 ? "PM" : "AM";
-      // Alert.alert("Scheduled ✓", `Daily notification set for ${displayHour}:${minute} ${displayPeriod}`);
       
-      // Refresh the notifications list in parent component
+      const dayNames = selectedDays.length === 7 
+        ? "Every day"
+        : selectedDays.map(d => daysOfWeek[d].label).join(', ');
+      
+      Alert.alert("Scheduled ✓", `Reminder set for ${dayNames} at ${displayHour}:${minute} ${displayPeriod}`);
+      
       if (onReminderCreated) {
         onReminderCreated()
       }
-    } catch (error : any) {
+    } catch (error:any) {
       console.error('Error scheduling notification:', error)
       Alert.alert('Error', `Failed to schedule notification: ${error.message || 'Please try again.'}`)
     } finally {
@@ -274,7 +333,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
               <View className='gap-2'>
                 <Text className='font-nt_regular text-left' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Time</Text>
                 <View className='flex-row items-center justify-center gap-2'>
-                  {/* Hour Dropdown */}
                   <TouchableOpacity className='border-[1px] rounded-xl px-4 py-3 items-center flex-row justify-between' style={{borderColor: mode.neutral, width: scale(70)}} onPress={() => setShowHourPicker(true)} >
                     <Text className='font-nt_medium' style={{fontSize: FONT.md, color: mode.textPrimary}}>
                       {hour}
@@ -284,7 +342,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
                   
                   <Text className='font-nt_bold' style={{fontSize: FONT.lg, color: mode.textPrimary}}>:</Text>
                   
-                  {/* Minute Dropdown */}
                   <TouchableOpacity 
                     className='border-[1px] rounded-xl px-4 py-3 items-center flex-row justify-between' 
                     style={{borderColor: mode.neutral, width: scale(70)}}
@@ -296,7 +353,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
                     <RemixIcon name='arrow-down-s-line' size={scale(14)} color={mode.textSecondary}/>
                   </TouchableOpacity>
 
-                  {/* AM/PM */}
                   <View className='flex-row gap-1'>
                     <TouchableOpacity 
                       className='rounded-lg px-3 py-2'
@@ -316,17 +372,51 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
                 </View>
               </View>
 
-              {/* Daily Info Badge */}
+              {/* Day Selection */}
+              <View className='gap-2'>
+                <Text className='font-nt_regular text-left' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                  Repeat On
+                </Text>
+                <View className='flex-row flex-wrap gap-2 justify-between'>
+                  {daysOfWeek.map((day) => (
+                    <TouchableOpacity
+                      key={day.value}
+                      onPress={() => toggleDay(day.value)}
+                      className='rounded-lg '
+                      style={{
+                        backgroundColor: selectedDays.includes(day.value) ? theme.accent : mode.card,
+                        borderWidth: 1,
+                        borderColor: selectedDays.includes(day.value) ? theme.accent : mode.neutral,
+                        width: scale(38),
+                      }}
+                    >
+                      <Text
+                        className='font-nt_medium text-center'
+                        style={{
+                          fontSize: FONT.xxs,
+                          color: selectedDays.includes(day.value) ? 'white' : mode.textSecondary,
+                        }}
+                      >
+                        {day.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              {/* Info Badge
               <View className='w-full rounded-xl p-3' style={{backgroundColor: mode.card}}>
                 <View className='flex-row items-center gap-2'>
                   <RemixIcon name='repeat-line' size={scale(14)} color={theme.accent}/>
                   <Text className='font-nt_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
-                    This reminder will repeat daily at the set time
+                    {selectedDays.length === 7
+                      ? 'This reminder will repeat every day'
+                      : `This reminder will repeat on ${selectedDays.map(d => daysOfWeek[d].label).join(', ')}`}
                   </Text>
                 </View>
-              </View>
+              </View> */}
 
-              {/* Sound Toggle */}
+              {/* Sound Toggle
               <View className='flex-row items-center justify-between'>
                 <View className='flex-row items-center gap-2'>
                   <RemixIcon name='volume-up-line' size={scale(16)} color={mode.textSecondary}/>
@@ -343,7 +433,7 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
                     )}
                   </View>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
           </AlertDialogHeader>
         </ScrollView>
@@ -367,7 +457,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         </AlertDialogFooter>
       </AlertDialogContent>
 
-      {/* Hour Picker Modal */}
       <TimePicker
         visible={showHourPicker}
         onClose={() => setShowHourPicker(false)}
@@ -377,7 +466,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         title="Select Hour"
       />
 
-      {/* Minute Picker Modal */}
       <TimePicker
         visible={showMinutePicker}
         onClose={() => setShowMinutePicker(false)}

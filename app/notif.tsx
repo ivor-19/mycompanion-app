@@ -89,16 +89,43 @@ export default function Notif() {
     const message = scheduled
       .map((notif, i) => {
         const trigger = notif.trigger as any;
+        const data = notif.content.data as { selectedDays?: number[], reminderName?: string };
+        const selectedDays = data?.selectedDays;
+        
         if (trigger.type === "daily") {
           const h = trigger.hour || 0;
           const m = trigger.minute || 0;
           const period = h >= 12 ? "PM" : "AM";
           const displayH = h % 12 || 12;
-          return `${i + 1}. ${notif.content.body}\n   Daily at ${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+          const timeStr = `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+          
+          // Format day display
+          let dayDisplay = 'Daily';
+          if (selectedDays && Array.isArray(selectedDays)) {
+            if (selectedDays.length === 7) {
+              dayDisplay = 'Daily';
+            } else if (selectedDays.length === 5 && 
+                      selectedDays.includes(1) && 
+                      selectedDays.includes(2) && 
+                      selectedDays.includes(3) && 
+                      selectedDays.includes(4) && 
+                      selectedDays.includes(5)) {
+              dayDisplay = 'Weekdays (Mon-Fri)';
+            } else if (selectedDays.length === 2 && 
+                      selectedDays.includes(0) && 
+                      selectedDays.includes(6)) {
+              dayDisplay = 'Weekends (Sat-Sun)';
+            } else {
+              const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+              dayDisplay = selectedDays.map(d => dayNames[d]).join(', ');
+            }
+          }
+          
+          return `${i + 1}. ${notif.content.body}\n   ${dayDisplay} at ${timeStr}`;
         }
         return `${i + 1}. ${notif.content.body}`;
       })
-      .join("\n\n");
+    .join("\n\n");
 
     Alert.alert(`Scheduled (${scheduled.length})`, message);
   }

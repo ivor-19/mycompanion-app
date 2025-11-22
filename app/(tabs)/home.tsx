@@ -248,7 +248,14 @@ export default function Home() {
                   <>
                     {scheduledNotifications.map((notif, index) => {
                       const trigger = notif.trigger as any;
+                      const data = notif.content.data as { selectedDays?: number[], reminderName?: string };
+                      console.log('Notification data:', data); // ADD THIS LINE
+                      console.log('Selected days:', data?.selectedDays); // AND THIS
+                      const selectedDays = data?.selectedDays;
+                      
+                      
                       let timeDisplay = '';
+                      let dayDisplay = 'Daily'; // Default
                       
                       if (trigger.type === "daily") {
                         const h = trigger.hour || 0;
@@ -256,6 +263,28 @@ export default function Home() {
                         const period = h >= 12 ? "PM" : "AM";
                         const displayH = h % 12 || 12;
                         timeDisplay = `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+                        
+                        // Format day display based on selectedDays
+                        if (selectedDays && Array.isArray(selectedDays)) {
+                          if (selectedDays.length === 7) {
+                            dayDisplay = 'Daily';
+                          } else if (selectedDays.length === 5 && 
+                                    selectedDays.includes(1) && 
+                                    selectedDays.includes(2) && 
+                                    selectedDays.includes(3) && 
+                                    selectedDays.includes(4) && 
+                                    selectedDays.includes(5)) {
+                            dayDisplay = 'Weekdays';
+                          } else if (selectedDays.length === 2 && 
+                                    selectedDays.includes(0) && 
+                                    selectedDays.includes(6)) {
+                            dayDisplay = 'Weekends';
+                          } else {
+                            // Show abbreviated day names
+                            const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                            dayDisplay = selectedDays.map(d => dayAbbreviations[d]).join(', ');
+                          }
+                        }
                       }
                       
                       return (
@@ -264,10 +293,10 @@ export default function Home() {
                             <RemixIcon name="notification-line" size={scale(20)} color={theme.accent}/>
                             <View className="flex-1">
                               <Text className="font-funnel_semi mb-1" style={{fontSize: FONT.sm, color: mode.textPrimary}}>
-                                {notif.content.body.replace(/^Reminder:\s*/i, "")}
+                                {data?.reminderName || notif.content.body?.replace('Reminder: ', '') || notif.content.title}
                               </Text>
                               <Text className="font-funnel_regular" style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
-                                {timeDisplay} • Daily
+                                {timeDisplay} • {dayDisplay}
                               </Text>
                             </View>
                           </View>
