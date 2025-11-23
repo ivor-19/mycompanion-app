@@ -208,30 +208,19 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         // MORE DEBUG LOGS
         safeLog("Scheduling for day", day);
 
-        const triggerData = {
-          type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-          weekday: Number(day + 1),
-          hour: Number(notificationHour),
-          minute: Number(minute),
-          channelId: "default",
-        };
-
-        const contentData = {
-          title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
-          body: `Reminder: ${reminderName.trim()}`,
-          data: {
-            reminderName: String(reminderName.trim()),
-            dayOfWeek: String(day),
-          },
-        };
-
-        safeLog("Trigger object", triggerData);
-        safeLog("Content object", contentData);
-
         try {
           const id = await Notifications.scheduleNotificationAsync({
-            content: contentData,
-            trigger: triggerData,
+            content: {
+              title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
+              body: `Reminder: ${reminderName.trim()}`,
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+              weekday: Number(day + 1),
+              hour: Number(notificationHour),
+              minute: Number(minute),
+              channelId: "default",
+            },
           });
 
           safeLog("Notification Created ID", id);

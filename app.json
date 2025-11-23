@@ -34,7 +34,7 @@
         "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
         "android.permission.WAKE_LOCK"
       ],
-      "package": "com.sehalee.mycompanion"
+      "package": "com.sehalee2.mycompanion"
     },
     "web": {
       "bundler": "metro",
@@ -93,8 +93,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "c4b47f16-5825-4b0d-92fc-774fc4042451"
+        "projectId": "fb2f0ccb-2b82-46e5-9e9c-f7c9cbaafa4f"
       }
-    }
+    },
+    "owner": "sehalee2"
   }
 }
