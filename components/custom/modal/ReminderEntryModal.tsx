@@ -219,7 +219,6 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         const contentData = {
           title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
           body: `Reminder: ${reminderName.trim()}`,
-          sound: soundEnabled ? "default" : undefined,
           data: {
             reminderName: String(reminderName.trim()),
             dayOfWeek: String(day),
