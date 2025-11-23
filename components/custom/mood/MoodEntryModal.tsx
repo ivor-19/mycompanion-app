@@ -325,7 +325,7 @@ export default function MoodEntryModal({ open, setOpen, moodText }: Props) {
 
                   {/* Status indicator when no images */}
                   {selectedImages.length === 0 && (
-                    <View className='border border-gray-300 rounded-xl p-3' style={{backgroundColor: theme.primary + '20'}}>
+                    <View className='rounded-xl p-3' style={{backgroundColor: theme.primary + '20'}}>
                       <View className='flex-row items-center gap-2'>
                         <RemixIcon name='information-line' size={16} color={theme.primary}/>
                         <Text className='font-nt_regular  flex-1' style={{fontSize: FONT.xs, color: theme.textPrimary}}>

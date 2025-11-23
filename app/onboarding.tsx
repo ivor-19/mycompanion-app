@@ -30,23 +30,17 @@ const onboardingData: OnboardingItem[] = [
    {
     id: 1,
     title: 'My Companion',
-    subtitle: 'AI as a First Responder: A Mobile-Based Psychological Support System designed to guide and support you anytime, anywhere.',
+    subtitle: 'A mobile app that offers simple guidance and steady support to help you handle stress, worries, or moments when you feel overwhelmed.',
     image: require('@/assets/images/illustrations/welcome.png'),
   },
   {
     id: 2,
-    title: 'Chatbot Support',
-    subtitle: 'Talk to an AI-powered chatbot that listens, understands, and provides supportive responses when you need someone to lean on.',
-    image: require('@/assets/images/illustrations/chatbot.png'),
-  },
-  {
-    id: 3,
     title: 'Mood Tracking',
     subtitle: 'Track your mood daily, weekly, and monthly to gain insights into your emotional well-being and personal growth.',
     image: require('@/assets/images/illustrations/moodtracking.png'),
   },
   {
-    id: 4,
+    id: 3,
     title: 'Find Help Nearby',
     subtitle: 'Easily access mental health hotlines and locate the nearest clinics or hospitals through an interactive map.',
     image: require('@/assets/images/illustrations/clinic.png'),

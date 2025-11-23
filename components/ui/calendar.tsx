@@ -3,9 +3,8 @@ import { FONT } from '@/lib/scale';
 import { useColorModeStore } from '@/stores/colorModeStore';
 import { useMoodStore } from '@/stores/moodStore';
 import { useThemeStore } from '@/stores/themeStore';
-import { Image } from 'expo-image';
 import React, { ReactElement, useState } from 'react';
-import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Image as RNImage, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import RemixIcon from 'react-native-remix-icon';
 import { scale } from 'react-native-size-matters';
 
@@ -15,9 +14,9 @@ interface CalendarProps {
   dayTextStyle?: TextStyle;
   containerStyle?: ViewStyle;
   showNavigationButtons?: boolean;
-  maxMoodsPerDay?: number; // New prop to limit how many moods to show
-  onDatePress?: (dateString: string) => void; // Callback when date is pressed
-  selectedDate?: string | null; // Currently selected date
+  maxMoodsPerDay?: number;
+  onDatePress?: (dateString: string) => void;
+  selectedDate?: string | null;
   onMonthChange?: () => void; 
 }
 
@@ -27,7 +26,7 @@ const Calendar: React.FC<CalendarProps> = ({
   dayTextStyle = {},
   containerStyle = {},
   showNavigationButtons = true,
-  maxMoodsPerDay = 3, // Default to show max 3 moods per day
+  maxMoodsPerDay = 3,
   onMonthChange,
   onDatePress,
   selectedDate = null
@@ -57,32 +56,25 @@ const Calendar: React.FC<CalendarProps> = ({
     newDate.setMonth(currentDate.getMonth() + direction);
     setCurrentDate(newDate);
 
-     if (onMonthChange) {
+    if (onMonthChange) {
       onMonthChange();
     }
-    
   };
 
-  // Updated function to get ALL moods for a specific date
   const getMoodsForDate = (day: number) => {
     const currentMonth = monthNames[currentDate.getMonth()];
     const currentYear = currentDate.getFullYear();
-    
-    // Format the date to match your mood date format: "21 August 2025"
     const dateString = `${day} ${currentMonth} ${currentYear}`;
     
-    // Find ALL moods that match this date and limit to maxMoodsPerDay
     return moods.filter(mood => mood.date === dateString).slice(0, maxMoodsPerDay);
   };
 
-  // Function to get formatted date string for a day
   const getDateString = (day: number) => {
     const currentMonth = monthNames[currentDate.getMonth()];
     const currentYear = currentDate.getFullYear();
     return `${day} ${currentMonth} ${currentYear}`;
   };
 
-  // Function to handle date press
   const handleDatePress = (day: number) => {
     if (onDatePress) {
       const dateString = getDateString(day);
@@ -111,7 +103,6 @@ const Calendar: React.FC<CalendarProps> = ({
         new Date().getMonth() === currentDate.getMonth() &&
         new Date().getFullYear() === currentDate.getFullYear();
 
-      // Get ALL moods for this specific date
       const moodsForDate = getMoodsForDate(day);
       const hasMultipleMoods = moodsForDate.length > 1;
       const dateString = getDateString(day);
@@ -128,18 +119,40 @@ const Calendar: React.FC<CalendarProps> = ({
           {/* Show multiple moods if they exist for this date */}
           {moodsForDate.length > 0 && (
             <View className='items-center mb-2'>
-              <View className='flex-row items-center justify-center'>
-                {moodsForDate.map((mood, index) => (
-                  <Image 
-                    key={`${mood.date}-${index}`}
-                    source={getEmojiByMood(mood.moodText)} 
-                    style={[
-                      styles.moodEmoji,
-                      hasMultipleMoods && styles.smallMoodEmoji,
-                      index > 0 && styles.overlappingEmoji
-                    ]}
-                  />
-                ))}
+              <View className='flex-row items-center justify-center' style={styles.emojiContainer}>
+                {moodsForDate.map((mood, index) => {
+                  try {
+                    const emojiSource = getEmojiByMood(mood.moodText);
+                    
+                    if (!emojiSource) {
+                      console.warn('No emoji source for mood:', mood.moodText);
+                      return null;
+                    }
+                    
+                    // Try using React Native Image instead of Expo Image for better compatibility
+                    return (
+                      <RNImage 
+                        key={`emoji-${day}-${index}-${mood.moodText}`}
+                        source={emojiSource}
+                        style={[
+                          styles.moodEmoji,
+                          hasMultipleMoods && styles.smallMoodEmoji,
+                          index > 0 && styles.overlappingEmoji
+                        ]}
+                        resizeMode="contain"
+                        onError={(error) => {
+                          console.error('Image load error for mood:', mood.moodText, error.nativeEvent.error);
+                        }}
+                        onLoad={() => {
+                          console.log('Image loaded successfully:', mood.moodText);
+                        }}
+                      />
+                    );
+                  } catch (error) {
+                    console.error('Error rendering emoji:', error);
+                    return null;
+                  }
+                })}
               </View>
               
               {/* Show count indicator if there are more moods than displayed */}
@@ -150,44 +163,46 @@ const Calendar: React.FC<CalendarProps> = ({
                 const remainingMoods = totalMoodsForDate - maxMoodsPerDay;
                 
                 return remainingMoods > 0 && (
-                  <Text className='flex-row text-center font-funnel_regular mt-1 ' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>+ {remainingMoods} more</Text>
+                  <Text className='flex-row text-center font-funnel_regular mt-1' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+                    +{remainingMoods}
+                  </Text>
                 );
               })()}
             </View>
           )}
           
           <Text
-              style={[
-                {
-                  fontFamily: "nt_regular",
-                  color: mode.textSecondary
-                },
-                (isToday && isSelected) && {
-                  backgroundColor: theme.primary + '20',
-                  borderRadius: 9999,
-                  paddingVertical: 8,
-                  paddingHorizontal: 16,
-                  fontFamily: "nt_semi",
-                  color: theme.textPrimary,
-                },
-                (isToday && !isSelected) && {
-                  backgroundColor: theme.primary + '20',
-                  borderRadius: 9999,
-                  paddingVertical: 8,
-                  paddingHorizontal: 16,
-                  fontFamily: "nt_semi",
-                  color: theme.primary,
-                },
-                (!isToday && isSelected) && {
-                  backgroundColor: mode.neutral,
-                  borderRadius: 9999,
-                  paddingVertical: 8,
-                  paddingHorizontal: 16,
-                  fontFamily: "nt_semi",
-                  color: theme.textPrimary,
-                },
-              ]}
-            >
+            style={[
+              {
+                fontFamily: "nt_regular",
+                color: mode.textSecondary
+              },
+              (isToday && isSelected) && {
+                backgroundColor: theme.primary + '20',
+                borderRadius: 9999,
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                fontFamily: "nt_semi",
+                color: theme.textPrimary,
+              },
+              (isToday && !isSelected) && {
+                backgroundColor: theme.primary + '20',
+                borderRadius: 9999,
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                fontFamily: "nt_semi",
+                color: theme.primary,
+              },
+              (!isToday && isSelected) && {
+                backgroundColor: mode.neutral,
+                borderRadius: 9999,
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                fontFamily: "nt_semi",
+                color: theme.textPrimary,
+              },
+            ]}
+          >
             {day}
           </Text>
         </TouchableOpacity>
@@ -202,7 +217,7 @@ const Calendar: React.FC<CalendarProps> = ({
       {/* Header with month/year and navigation */}
       <View className='flex-row justify-between items-center mb-6'>
         {showNavigationButtons && (
-          <TouchableOpacity onPress={() => navigateMonth(-1)}>
+          <TouchableOpacity onPress={() => navigateMonth(-1)} activeOpacity={0.7}>
             <RemixIcon name='arrow-left-s-line' size={scale(24)} color={mode.textPrimary}/>
           </TouchableOpacity>
         )}
@@ -212,7 +227,7 @@ const Calendar: React.FC<CalendarProps> = ({
         </Text>
         
         {showNavigationButtons && (
-          <TouchableOpacity onPress={() => navigateMonth(1)}>
+          <TouchableOpacity onPress={() => navigateMonth(1)} activeOpacity={0.7}>
             <RemixIcon name='arrow-right-s-line' size={scale(24)} color={mode.textPrimary}/>
           </TouchableOpacity>
         )}
@@ -231,7 +246,9 @@ const Calendar: React.FC<CalendarProps> = ({
       <View className='flex-wrap flex-row'>
         {renderCalendarDays()}
       </View>
-      <Text className='text-center font-funnel_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>Select a date to see mood entries</Text>
+      <Text className='text-center font-funnel_regular' style={{fontSize: FONT.xxs, color: mode.textSecondary}}>
+        Select a date to see mood entries
+      </Text>
     </View>
   );
 };
@@ -252,21 +269,30 @@ const styles = StyleSheet.create({
     margin: 10
   },
   dayCell: {
-    width: '14.28%', // 100% / 7 days
+    width: '14.28%',
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  emojiContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: scale(18),
+    minWidth: scale(18),
+  },
   moodEmoji: {
     height: scale(16),
     width: scale(16),
+    resizeMode: 'contain',
   },
   smallMoodEmoji: {
-    height: scale(14),
-    width: scale(14),
+    height: scale(13),
+    width: scale(13),
+    resizeMode: 'contain',
   },
   overlappingEmoji: {
-    marginLeft: scale(-5), // Overlap emojis slightly when there are multiple
+    marginLeft: scale(-5),
   },
 });
 

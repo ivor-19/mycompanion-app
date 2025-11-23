@@ -19,7 +19,64 @@ export default function MonthlyMood() {
     deleteMood(id);
   };
 
+  // Normalize date format for comparison - matches both "23 November 2025" and "November 23, 2025"
+  const normalizeDateString = (dateStr: string): string => {
+    try {
+      // Remove commas and trim
+      const cleanedStr = dateStr.replace(/,/g, '').trim();
+      const parts = cleanedStr.split(' ');
+      
+      const months = { 
+        'January': 0, 'February': 1, 'March': 2, 'April': 3, 
+        'May': 4, 'June': 5, 'July': 6, 'August': 7, 
+        'September': 8, 'October': 9, 'November': 10, 'December': 11 
+      };
+      
+      // Try "day month year" format (e.g., "23 November 2025") - Calendar format
+      if (parts.length === 3 && !isNaN(parseInt(parts[0]))) {
+        const day = parseInt(parts[0]);
+        const monthName = parts[1];
+        const year = parseInt(parts[2]);
+        
+        const monthIndex = months[monthName as keyof typeof months];
+        if (monthIndex !== undefined && !isNaN(day) && !isNaN(year)) {
+          // Return in "day month year" format to match calendar
+          return `${day} ${monthName} ${year}`;
+        }
+      }
+      
+      // Try "month day year" format (e.g., "November 23 2025")
+      if (parts.length === 3 && isNaN(parseInt(parts[0]))) {
+        const monthName = parts[0];
+        const day = parseInt(parts[1]);
+        const year = parseInt(parts[2]);
+        
+        const monthIndex = months[monthName as keyof typeof months];
+        if (monthIndex !== undefined && !isNaN(day) && !isNaN(year)) {
+          // Convert to "day month year" format to match calendar
+          return `${day} ${monthName} ${year}`;
+        }
+      }
+      
+      // Fallback to native Date parsing and convert to calendar format
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        const day = date.getDate();
+        const monthName = Object.keys(months).find(key => months[key as keyof typeof months] === date.getMonth());
+        const year = date.getFullYear();
+        return `${day} ${monthName} ${year}`;
+      }
+      
+      // If all parsing fails, return original
+      return dateStr;
+    } catch (error) {
+      console.log('Date normalization error for:', dateStr, error);
+      return dateStr;
+    }
+  };
+
   const handleDatePress = (date: string) => {
+    console.log('Selected date from calendar:', date);
     if (selectedDate === date) {
       setSelectedDate(null);
     } else {
@@ -31,19 +88,40 @@ export default function MonthlyMood() {
     setSelectedDate(null);
   };
 
+  // Filter moods with normalized date comparison
   const filteredMoods = selectedDate 
-    ? moods.filter(mood => mood.date === selectedDate)
+    ? moods.filter(mood => {
+        const normalizedMoodDate = normalizeDateString(mood.date);
+        const normalizedSelectedDate = normalizeDateString(selectedDate);
+        console.log(`Comparing: ${normalizedMoodDate} === ${normalizedSelectedDate}`, normalizedMoodDate === normalizedSelectedDate);
+        return normalizedMoodDate === normalizedSelectedDate;
+      })
     : [];
 
+  // Log for debugging
+  console.log('Selected date:', selectedDate);
+  console.log('Filtered moods count:', filteredMoods.length);
+  console.log('All moods dates:', moods.map(m => m.date));
+
   const formatSelectedDate = (dateString: string) => {
+    try {
+      const normalized = normalizeDateString(dateString);
+      // normalized is now in "day month year" format, just add comma for display
+      const parts = normalized.split(' ');
+      if (parts.length === 3) {
+        return `${parts[1]} ${parts[0]}, ${parts[2]}`; // "November 23, 2025"
+      }
+    } catch (error) {
+      console.log('Format error:', error);
+    }
     return dateString;
   };
 
-    const isFocused = useIsFocused();
-  
-    if (!isFocused) {
-      return null; // unmount map completely when not focused
-    }
+  const isFocused = useIsFocused();
+
+  if (!isFocused) {
+    return null;
+  }
 
   return (
     <GBackground>

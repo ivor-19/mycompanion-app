@@ -42,7 +42,7 @@ export default function Index() {
               <Text className="font-nt_semi text-white">Continue</Text>
             </TouchableOpacity>
             {/* <Button text="Continue with Google" fontStyle="font-nt_semi" style="bg-white h-20" icon={require('../assets/icons/google.png')}/>*/}
-            <Text className="text-xs font-nt_regular" style={{color: mode.textSecondary}}>version 2.0</Text>
+            <Text className="text-xs font-nt_regular" style={{color: mode.textSecondary}}>version 1.1.0</Text>
           </View>
         </View>
       </GBackground>

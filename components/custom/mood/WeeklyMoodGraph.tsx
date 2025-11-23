@@ -70,23 +70,42 @@ const WeeklyMoodGraph: React.FC<WeeklyMoodGraphProps> = ({ moodsData }) => {
     return `${year}-${month}-${day}`;
   };
 
+ 
   const parseDateString = (dateStr: string): string => {
     try {
-      const parts = dateStr.trim().split(' ');
+      // Remove commas and trim
+      const cleanedStr = dateStr.replace(/,/g, '').trim();
+      const parts = cleanedStr.split(' ');
+      
+      const months = { 'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5, 'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11 };
+      
+      // Try "day month year" format (e.g., "23 November 2025")
       if (parts.length === 3) {
         const day = parseInt(parts[0]);
         const monthName = parts[1];
         const year = parseInt(parts[2]);
         
-        const months = { 'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5, 'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11 };
-        
         const monthIndex = months[monthName as keyof typeof months];
-        if (monthIndex !== undefined) {
+        if (monthIndex !== undefined && !isNaN(day) && !isNaN(year)) {
           const date = new Date(year, monthIndex, day);
           return formatDateToString(date);
         }
       }
       
+      // Try "month day year" format (e.g., "November 23 2025")
+      if (parts.length === 3) {
+        const monthName = parts[0];
+        const day = parseInt(parts[1]);
+        const year = parseInt(parts[2]);
+        
+        const monthIndex = months[monthName as keyof typeof months];
+        if (monthIndex !== undefined && !isNaN(day) && !isNaN(year)) {
+          const date = new Date(year, monthIndex, day);
+          return formatDateToString(date);
+        }
+      }
+      
+      // Fallback to native Date parsing
       const date = new Date(dateStr);
       if (!isNaN(date.getTime())) {
         return formatDateToString(date);
