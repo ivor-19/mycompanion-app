@@ -41,6 +41,15 @@ const daysOfWeek = [
   { label: 'Sat', value: 6 },
 ];
 
+// SAFEST LOGGING FUNCTION FOR PRODUCTION
+function safeLog(label: string, value: any) {
+  try {
+    console.warn(`🔍 ${label}:`, JSON.stringify(value));
+  } catch (e) {
+    console.warn(`🔍 ${label} (stringified):`, String(value));
+  }
+}
+
 async function registerForPushNotificationsAsync() {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
@@ -79,7 +88,7 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
   const [showMinutePicker, setShowMinutePicker] = useState(false)
   const [errorTitle, setErrorTitle] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [selectedDays, setSelectedDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]) // All days by default
+  const [selectedDays, setSelectedDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]) // All days
 
   const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'))
   const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))
@@ -98,13 +107,12 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
       setPeriod('PM')
       setSoundEnabled(true)
       setErrorTitle(false)
-      setSelectedDays([0, 1, 2, 3, 4, 5, 6]) // Reset to all days
+      setSelectedDays([0, 1, 2, 3, 4, 5, 6])
     }
   }, [open])
 
   const toggleDay = (day: number) => {
     if (selectedDays.includes(day)) {
-      // Don't allow deselecting if it's the last day
       if (selectedDays.length === 1) {
         Alert.alert('Error', 'Please select at least one day');
         return;
@@ -157,6 +165,9 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
     calculateTimeUntilReminder()
   }, [hour, minute, period])
 
+  // ===============================================
+  // ⚡⚡⚡ PRODUCTION-SAFE, FULLY LOGGED handleSave ⚡⚡⚡
+  // ===============================================
   const handleSave = async () => {
     if (!reminderName.trim()) {
       setErrorTitle(true)
@@ -184,29 +195,53 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
       } else if (period === 'AM' && notificationHour === 12) {
         notificationHour = 0
       }
-      
-      // Schedule a WEEKLY notification for EACH selected day
+
+      // DEBUG: LOG VALUES BEFORE SCHEDULING
+      safeLog("Reminder Name", reminderName);
+      safeLog("Selected Days", selectedDays);
+      safeLog("Hour", notificationHour);
+      safeLog("Minute", minute);
+
       const notificationIds = [];
+
       for (const day of selectedDays) {
-        const id = await Notifications.scheduleNotificationAsync({
-          content: {
-            title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
-            body: `Reminder: ${reminderName.trim()}`,
-            data: {
-              reminderName: reminderName.trim(),
-              dayOfWeek: day,
-            },
+        // MORE DEBUG LOGS
+        safeLog("Scheduling for day", day);
+
+        const triggerData = {
+          type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+          weekday: Number(day + 1),
+          hour: Number(notificationHour),
+          minute: Number(minute),
+          channelId: "default",
+        };
+
+        const contentData = {
+          title: reminderTitles[Math.floor(Math.random() * reminderTitles.length)],
+          body: `Reminder: ${reminderName.trim()}`,
+          sound: soundEnabled ? "default" : undefined,
+          data: {
+            reminderName: String(reminderName.trim()),
+            dayOfWeek: String(day),
           },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-            weekday: day + 1, // CRITICAL: Expo uses 1=Sunday, 2=Monday, etc.
-            hour: notificationHour,
-            minute: parseInt(minute),
-            channelId: "default",
-          },
-        });
-        notificationIds.push(id);
-        console.log(`✅ Scheduled notification for ${daysOfWeek[day].label} with ID: ${id}`);
+        };
+
+        safeLog("Trigger object", triggerData);
+        safeLog("Content object", contentData);
+
+        try {
+          const id = await Notifications.scheduleNotificationAsync({
+            content: contentData,
+            trigger: triggerData,
+          });
+
+          safeLog("Notification Created ID", id);
+          notificationIds.push(id);
+
+        } catch (innerErr: any) {
+          console.warn("❌ scheduleNotificationAsync CRASH", innerErr?.message || innerErr);
+          Alert.alert("Error", innerErr?.message || "Unknown inner scheduling error.");
+        }
       }
 
       setOpen(false)
@@ -225,7 +260,7 @@ export default function ReminderSetupModal({ open, setOpen, onReminderCreated }:
         onReminderCreated()
       }
     } catch (error:any) {
-      console.error('Error scheduling notification:', error)
+      console.warn("❌ MAIN TRY/CATCH ERROR", error?.message || error);
       Alert.alert('Error', `Failed to schedule notification: ${error.message || 'Please try again.'}`)
     } finally {
       setLoading(false)
