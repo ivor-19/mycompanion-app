@@ -2,7 +2,7 @@
   "expo": {
     "name": "My Companion",
     "slug": "mycompanion",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/app-icons/icon.png",
     "scheme": "mycompanion",
@@ -19,7 +19,7 @@
       "edgeToEdgeEnabled": true,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBz6m86m7Ngavzh9vbeMM2uIvIssd6zd7c"
+          "apiKey": "AIzaSyA5Tt9pMBIEzIF_ZH8vv6A62bEwU5_i9Xg"
         }
       },
       "permissions": [
